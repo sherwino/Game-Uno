@@ -1,0 +1,33 @@
+#cssanime {
+  background: url(../img/bg.png);
+  background-repeat: no-repeat;
+  position: absolute;
+  top: -80px;
+  width: 900px;
+  height: 300px;
+  animation: move-east 50.0s steps(750) infinite;
+}
+
+@keyframes move-east {
+  from { background-position: 0px;}
+  to {background-position: -2960px;}
+
+}
+
+
+#csschar {
+  background: url(../img/character.png);
+  background-repeat: no-repeat;
+  position: fixed;
+  top: 160px;
+  left: 100px;
+  width: 19px;
+  height: 60px;
+  animation: move-char 0.5s steps(9) infinite;
+}
+
+@keyframes move-char {
+  from { background-position: 0px;}
+  to {background-position: -185px;}
+
+}
