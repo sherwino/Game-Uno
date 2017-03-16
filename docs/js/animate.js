@@ -6,15 +6,15 @@ console.log("Animate.js is LOADED");
 //this js file is for the hero constructor and associated sprites, and movement functions
 
 
-var dude, runsprites, bgImg;
+var dude, runsprites, bgImg, mapWidth = 8520;
 
 function Hero (name) {
   this.name = name;
-  this.x = width/2;
+  this.x = 200;
   this.y = height/2;
   this.xspeed = 0;
   this.gravity = 15;
-  this.jump = -7;
+  this.jump = -7 * 0.75;
   this.runsprites = createSprite(this.x, this.y, 800, 600);
 
   this.show = function () {
@@ -33,15 +33,15 @@ function Hero (name) {
     this.x = this.x + this.xspeed;
     this.y = this.y + this.gravity *1.9;
 
-    // if (this.x > width) {
-    //   this.x = width;
-    //   this.xspeed = 0;
-    // }
-    //
-    // if (this.x < 0) {
-    //   this.x = 0;
-    //   this.xspeed = 0;
-    // }
+    if (this.x > mapWidth - 780) {
+      this.x = mapWidth - 780;
+      this.xspeed = 0;
+    }
+
+    if (this.x < 0) {
+      this.x = 0;
+      this.xspeed = 0;
+    }
 
     if (this.y > height - 80) {
       this.y = height - 80;
@@ -65,6 +65,8 @@ function setup () {
   dude = new Hero ();
   textSize(50);
   dude.runsprites.addAnimation("standing", "./img/hero/heroguy9.png", "./img/hero/heroguy9.png");
+  dude.runsprites.addAnimation("jumping", "./img/hero/heroguy_jump1.png");
+  dude.runsprites.addAnimation("crouching", "./img/hero/heroguy_crouch1.png");
   dude.runsprites.addAnimation("running", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
   dude.runsprites.addAnimation("spinning", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
   bgImg = loadImage("./img/bg.jpg");
@@ -73,36 +75,69 @@ function setup () {
 }
 
 
+
 function draw () {
   clear();
-  image(bgImg, 0,0);
+  image(bgImg, -400,0);
   dude.update();
   dude.show();
   drawSprites();
   text(keyCode, 33,65);
   camera.position.x = dude.x;
   camera.position.y = height/2;
+  camera.zoom = 1;
+
+  if (keyDown(UP_ARROW)) {
+    dude.dir(0, dude.jump);
+    dude.runsprites.changeAnimation("jumping");
+    // dude.dir(0, dude.gravity);
+
+  }
+
+  if (keyDown(DOWN_ARROW)) {
+    dude.runsprites.changeAnimation("crouching");
+
+  }
+  if (keyDown(RIGHT_ARROW)) {
+    dude.x += 7;
+    dude.runsprites.changeAnimation("running");
+    dude.runsprites.mirrorX(1);
+  }
+  if (keyDown(LEFT_ARROW)) {
+    dude.x -= 7;
+    dude.runsprites.changeAnimation("running");
+    dude.runsprites.mirrorX(-1);
+  }
+  // if (gameStarted == true){
+  // setTimeout(function (){
+  //
+  //   camera.position.y = dude.y;
+  //   camera.zoom = 4;
+  //
+  // }, 3000);
 }
 
-  function keyPressed () {
-      if (keyCode === UP_ARROW) {
-        dude.gravity = -7;
-        // dude.dir(0, dude.jump);
-        // dude.dir(0, dude.gravity);
-        dude.runsprites.scale += 0.05;
-      } else if (keyCode === DOWN_ARROW) {
-        dude.dir(0, 3);
-        dude.runsprites.scale -= 0.05;
-      } else if (keyCode === RIGHT_ARROW) {
-        dude.dir(2, 0);
-        dude.runsprites.changeAnimation("running");
-        dude.runsprites.mirrorX(1);
-      } else if (keyCode === LEFT_ARROW) {
-        dude.dir(-2, 0);
-        dude.runsprites.changeAnimation("running");
-        dude.runsprites.mirrorX(-1);
-      }
-  } //ends the keyPressed function
+  // function keyPressed () {
+      // if (keyDown(UP_ARROW)) {
+      //   dude.dir(0, dude.jump);
+      //   // dude.dir(0, dude.gravity);
+      //   dude.runsprites.scale += 0.05;
+      // }
+      // if (keyDown(DOWN_ARROW)) {
+      //   dude.dir(0, 3);
+      //   dude.runsprites.scale -= 0.05;
+      // }
+      // if (keyDown(RIGHT_ARROW)) {
+      //   dude.dir(7, 0);
+      //   dude.runsprites.changeAnimation("running");
+      //   dude.runsprites.mirrorX(1);
+      // }
+      // if (keyDown(LEFT_ARROW)) {
+      //   dude.dir(-7, 0);
+      //   dude.runsprites.changeAnimation("running");
+      //   dude.runsprites.mirrorX(-1);
+      // }
+  // } //ends the keyPressed function
 
   function keyReleased() {
     dude.xspeed = 0;
@@ -111,6 +146,14 @@ function draw () {
     return false; // prevent any default behavior
   }
 
+//-------------------------
+// setTimeout(function (){
+//   camera.position.y = height/2;
+//   camera.zoom = 1;
+// }, 3000);
+//------POWER UP------------
+//-----SUPER SPEED---------this.xspeed += x; this.gravity += y;
+//-----SUPER SIZE---------    dude.runsprites.scale += 0.05;     dude.runsprites.scale -= 0.05;
 
 // this.showHero = function () {
 // }
