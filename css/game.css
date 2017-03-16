@@ -1,11 +1,12 @@
 #cssanime {
   background: url(../img/bg.png);
   background-repeat: no-repeat;
-  position: absolute;
+  position: fixed;
   top: -80px;
-  width: 900px;
+  right: 0px;
+  width: 300px;
   height: 300px;
-  animation: move-east 50.0s steps(750) infinite;
+  animation: move-east 38.0s steps(800) infinite;
 }
 
 @keyframes move-east {
@@ -16,18 +17,46 @@
 
 
 #csschar {
-  background: url(../img/character.png);
+  background: url(../img/heroguy.png);
   background-repeat: no-repeat;
   position: fixed;
   top: 160px;
-  left: 100px;
-  width: 19px;
+  right: 100px;
+  width: 56px;
   height: 60px;
-  animation: move-char 0.5s steps(9) infinite;
+  animation: move-char 1.0s steps(8) infinite;
 }
 
 @keyframes move-char {
   from { background-position: 0px;}
-  to {background-position: -185px;}
+  to {background-position: -546px;}
 
+}
+
+#csschar2 {
+  background: url(../img/character.png);
+  background-repeat: no-repeat;
+  position: fixed;
+  top: 160px;
+  right: 175px;
+  width: 28px;
+  height: 60px;
+  animation: move-char2 1.0s steps(6) infinite;
+}
+
+@keyframes move-char2 {
+  from { background-position: 0px;}
+  to {background-position: -168px;}
+
+}
+
+#defaultCanvas0 {
+  position: fixed;
+  background: transparent;
+  top: 0px;
+}
+
+#bg {
+  margin: 0 25%;
+  position:relative;
 }

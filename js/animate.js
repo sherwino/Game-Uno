@@ -1,113 +1,143 @@
 console.log("Animate.js is LOADED");
-// 
-// (function() {
-// 	// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// 	// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
-// 	// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
-// 	// MIT license
-//
-//     var lastTime = 0;
-//     var vendors = ['ms', 'moz', 'webkit', 'o'];
-//     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-//         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-//         window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
-//     }
-//
-//     if (!window.requestAnimationFrame)
-//         window.requestAnimationFrame = function(callback, element) {
-//             var currTime = new Date().getTime();
-//             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-//             var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-//               timeToCall);
-//             lastTime = currTime + timeToCall;
-//             return id;
-//         };
-//
-//     if (!window.cancelAnimationFrame)
-//         window.cancelAnimationFrame = function(id) {
-//             clearTimeout(id);
-//         };
-// }());
-//
-// //ALL OF THE STUFF ABOVE IS CRAZY RIGHT NOW
-//
-// (function () {
-//   var bgSprite,
-//       thebg,
-//       canvas;
-//
-//   function bgLoop () {
-//     window.requestAnimationFrame(bgLoop);
-//
-//     bgSprite.update();
-//     bgSprite.render();
-//   }
-//
-// function sprite (options) {
-//   var that = {},
-//   frameIndex = 0,
-//   tickCount = 0,
-//   ticksPerFrame = options.ticksPerFrame || 0;
-//   numberOfFrames = options.numberOfFrames || 1;
-//
-//
-//
-//   that.context = options.context;
-//   that.width = options.width;
-//   that.height = options.height;
-//   that.image = options.image;
-//   that.update = function () {
-//       tickCount += 1;
-//       if (tickCount > ticksPerFrame) {
-//         tickCount = 0;
-//           //if the current frame index is in range
-//           if (frameIndex < numberOfFrames - 1){
-//             // Go to the next frame
-//             frameIndex += 1;
-//           } else {
-//             frameIndex = 0;
-//           }
-//         }
-//       };
-//   that.render = function () {
-//     //clear the canvas
-//     that.context.clearRect(0,0, that.width, that.height);
-//
-//     that.context.drawImage(
-//       that.image,
-//       frameIndex * that.width / numberOfFrames,
-//       0,
-//       that.width / numberOfFrames,
-//       that.height,
-//       0,
-//       0,
-//       that.width / numberOfFrames,
-//       that.height);
-//   };
-//
-//   return that;
+
+//offline testing using these libraries
+//"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --user-data-dir="C:/Chrome dev session2" --disable-web-security
+
+//this js file is for the hero constructor and associated sprites, and movement functions
+
+
+var dude, runsprites, bgImg;
+
+function Hero (name) {
+  this.name = name;
+  this.x = width/2;
+  this.y = height/2;
+  this.xspeed = 0;
+  this.gravity = 15;
+  this.jump = -7;
+  this.runsprites = createSprite(this.x, this.y, 800, 600);
+
+  this.show = function () {
+    fill(255);
+    ellipse(this.x, this.y, 32, 32);
+  };
+
+
+  this.dir = function(x, y) {
+    this.xspeed = x;
+    this.gravity = y;
+  };
+
+  this.update = function () {
+
+    this.x = this.x + this.xspeed;
+    this.y = this.y + this.gravity *1.9;
+
+    // if (this.x > width) {
+    //   this.x = width;
+    //   this.xspeed = 0;
+    // }
+    //
+    // if (this.x < 0) {
+    //   this.x = 0;
+    //   this.xspeed = 0;
+    // }
+
+    if (this.y > height - 80) {
+      this.y = height - 80;
+      this.gravity = 0;
+    }
+
+    if (this.y < 40) {
+      this.y = 40;
+      this.gravity = 0;
+    }
+
+    dude.runsprites.position.x = this.x;
+    dude.runsprites.position.y = this.y;
+  };
+}
+
+
+
+function setup () {
+  createCanvas(800,600);
+  dude = new Hero ();
+  textSize(50);
+  dude.runsprites.addAnimation("standing", "./img/hero/heroguy9.png", "./img/hero/heroguy9.png");
+  dude.runsprites.addAnimation("running", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
+  dude.runsprites.addAnimation("spinning", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
+  bgImg = loadImage("./img/bg.jpg");
+  // dude.setCollider("circle", 0,0,20);
+
+}
+
+
+function draw () {
+  clear();
+  image(bgImg, 0,0);
+  dude.update();
+  dude.show();
+  drawSprites();
+  text(keyCode, 33,65);
+  camera.position.x = dude.x;
+  camera.position.y = height/2;
+}
+
+  function keyPressed () {
+      if (keyCode === UP_ARROW) {
+        dude.gravity = -7;
+        // dude.dir(0, dude.jump);
+        // dude.dir(0, dude.gravity);
+        dude.runsprites.scale += 0.05;
+      } else if (keyCode === DOWN_ARROW) {
+        dude.dir(0, 3);
+        dude.runsprites.scale -= 0.05;
+      } else if (keyCode === RIGHT_ARROW) {
+        dude.dir(2, 0);
+        dude.runsprites.changeAnimation("running");
+        dude.runsprites.mirrorX(1);
+      } else if (keyCode === LEFT_ARROW) {
+        dude.dir(-2, 0);
+        dude.runsprites.changeAnimation("running");
+        dude.runsprites.mirrorX(-1);
+      }
+  } //ends the keyPressed function
+
+  function keyReleased() {
+    dude.xspeed = 0;
+    dude.gravity = 15;
+    dude.runsprites.changeAnimation("standing");
+    return false; // prevent any default behavior
+  }
+
+
+// this.showHero = function () {
 // }
-// //Get that canvas element
-// canvas = document.getElementById("bgAnimation");
-// canvas.width= 32;
-// canvas.height= 60;
 //
-// //create a sprite sheet
-// thebg = new Image();
+// }
 //
+// function draw() {
+//   background(255,255,255);
 //
-// //create the sprite
-// bgSprite = sprite({
-//   context: canvas.getContext("2d"),
-//   width: 600,
-//   height: 60,
-//   image: thebg,
-//   numberOfFrames: 10,
-//   ticksPerFrame: 1
-// });
+//   //up and down keys to change the scale
+//   //note that scaling the image quality deteriorates
+//   //and scaling to a negative value flips the image
+//   if(keyIsDown(UP_ARROW))
+//     ghost.scale += 0.05;
+//   if(keyIsDown(DOWN_ARROW))
+//     ghost.scale -= 0.05;
 //
-// //load sprite sheet
-// thebg.addEventListener("load", bgLoop);
-// thebg.src = "./img/character.png";
+//   //draw the sprite
+//   drawSprites();
+// }
+
+
+
+
+
+
+
 //
-// } ());
+// width: 56px;
+// height: 60px;
