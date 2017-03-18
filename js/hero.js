@@ -62,12 +62,12 @@ function setup () {
   obstacles = new Group ();
   items = new Group ();
 
-
-  for (var i=0; i<4; i++) {
-  var box = createSprite(random(0, width), random(0,height));
-  box.addAnimation("normal", "./img/character.png");
-  obstacles.add(box);
-  }
+  //
+  // for (var i=0; i<4; i++) {
+  // var box = createSprite(random(0, width), random(0,height));
+  // box.addAnimation("normal", "./img/character.png");
+  // obstacles.add(box);
+  // }
 
   ground = createSprite(random(0, width),500);
   ground.addAnimation("normal", "./img/platform.png");
@@ -126,6 +126,7 @@ function draw () {
   dude.sprite.overlap(items, collect);
 
   function collect(collector, collected){
+    dude.sprite.scale += 0.15;  
     collected.remove();
   }
 
