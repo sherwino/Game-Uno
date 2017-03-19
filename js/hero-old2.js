@@ -1,4 +1,3 @@
-//HERE I SHOULD SAVE THE LAST WORKING VERSION OF THE FILE
 console.log("Animate.js is LOADED");
 
 //offline testing using these libraries

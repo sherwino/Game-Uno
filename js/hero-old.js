@@ -1,4 +1,3 @@
-//HERE I SHOULD SAVE THE LAST WORKING VERSION OF THE FILE
 console.log("Animate.js is LOADED");
 
 //offline testing using these libraries
@@ -7,7 +6,7 @@ console.log("Animate.js is LOADED");
 //this js file is for the hero constructor and associated sprites, and movement functions
 
 
-var dude, obstacles, ground, dot, items, thingImg, platformImg, projectiles, GRAVITY = 1, bgImg, mapWidth = 8520;
+var dude, obstacles, ground, items, projectiles, GRAVITY = 1, bgImg, mapWidth = 8520;
 
 function Hero (name) {
   this.name = name;
@@ -55,12 +54,12 @@ function setup () {
   dude.sprite.addAnimation("jumping", "./img/hero/heroguy_jump1.png");
   dude.sprite.addAnimation("crouching", "./img/hero/heroguy_crouch1.png");
   dude.sprite.addAnimation("running", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
-  dude.sprite.addAnimation("spinning", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
-  dude.sprite.debug = true;
+  dude.sprite.addAnimation("hipunch", "./img/hero/heroguy_hp1.png");
+
+  dude.sprite.addAnimation("lowpunch", "./img/hero/heroguy_lp.png");
+  dude.debug = true;
 
   bgImg = loadImage("./img/bg.jpg");
-  platformImg = loadImage("./img/collision.png");
-  thingImg = loadImage("./img/thing.gif");
 
   obstacles = new Group ();
   items = new Group ();
@@ -73,21 +72,16 @@ function setup () {
   // }
 
   ground = createSprite(random(0, width),500);
-  ground.addImage(platformImg);
+  ground.addAnimation("normal", "./img/platform.png");
 
   dude.sprite.depth = 20;
-
+  dude.sprite.setCollider("circle", 30, 30, 30);
 
 for (i=0; i<10; i++) {
-  dot = createSprite(random(0, 2000), random(0,height));
-  dot.addImage(thingImg);
-  dot.setCollider("circle", 0, 0, 30);
-  dot.debug = true;
+  var dot = createSprite(random(0, 5200), random(0,height));
+  dot.addAnimation("normal", "./img/thing.gif");
   items.add(dot);
   }
-
-
-ground.debug = true;
 
   textSize(50);
 }
@@ -96,6 +90,7 @@ ground.debug = true;
 
 function draw () {
   clear();
+  
   image(bgImg, -400,0);
   drawSprites();
 
@@ -105,11 +100,12 @@ function draw () {
   camera.position.x = dude.sprite.position.x;
   camera.position.y = height/2; //maybe
   camera.zoom = 1;
+  dude.sprite.changeAnimation("standing");
 
   dude.movementLimits();
-
   if (keyDown(UP_ARROW)) {
     dude.sprite.changeAnimation("jumping");
+
     dude.sprite.velocity.y = dude.jump; //maybe
   }
 
@@ -128,6 +124,16 @@ function draw () {
     dude.sprite.changeAnimation("running");
     dude.sprite.mirrorX(-1);
     dude.sprite.velocity.x = -7;
+  }
+
+  if (keyIsDown(90)) {
+    dude.sprite.changeAnimation("hipunch");
+    console.log("High Punch");
+  }
+
+  if (keyDown(88)) {
+    dude.sprite.changeAnimation("lowpunch");
+    console.log("Low Punch");
   }
 
   dude.sprite.collide(obstacles);
@@ -160,7 +166,7 @@ function draw () {
 function keyReleased() {
   dude.sprite.velocity.x = 0;
   dude.sprite.velocity.y = 15;
-  dude.sprite.changeAnimation("standing");
+
   return false; // prevent any default behavior
 }
 
