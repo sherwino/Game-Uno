@@ -1,4 +1,3 @@
-//HERE I SHOULD SAVE THE LAST WORKING VERSION OF THE FILE
 console.log("Animate.js is LOADED");
 
 //offline testing using these libraries
@@ -7,14 +6,15 @@ console.log("Animate.js is LOADED");
 //this js file is for the hero constructor and associated sprites, and movement functions
 
 
-var dude, obstacles, ground, dot, items, thingImg, platformImg, projectiles, GRAVITY = 1, bgImg, mapWidth = 8520;
+var dude, obstacles, ground, dot, items, thingImg, platformImg, gravityController, projectiles, gravity, bgImg, mapWidth = 8520;
 
 function Hero (name) {
   this.name = name;
   this.x = 200;
   this.y = height/2;
   this.jump = -10;
-  this.sprite = createSprite(this.x, this.y, 800, 600);
+  this.speed = 7;
+  this.sprite = createSprite(this.x, this.y, 60, 60);
 
   this.movementLimits = function () {
     this.x = this.x + this.sprite.velocity.x;
@@ -47,6 +47,8 @@ function Hero (name) {
 
 }
 
+
+
 function setup () {
   createCanvas(800,600);
   dude = new Hero ("Bob");
@@ -56,57 +58,62 @@ function setup () {
   dude.sprite.addAnimation("crouching", "./img/hero/heroguy_crouch1.png");
   dude.sprite.addAnimation("running", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
   dude.sprite.addAnimation("spinning", "./img/hero/heroguy1.png", "./img/hero/heroguy8.png");
+  dude.sprite.addAnimation("hipunch", "./img/hero/heroguy_hp1.png");
+  dude.sprite.addAnimation("lowpunch", "./img/hero/heroguy_lp.png");
+  dude.sprite.depth = 20;
   dude.sprite.debug = true;
 
   bgImg = loadImage("./img/bg.jpg");
-  platformImg = loadImage("./img/collision.png");
+  platformImg = loadImage("./img/collisionold.png");
   thingImg = loadImage("./img/thing.gif");
 
   obstacles = new Group ();
   items = new Group ();
 
+  for (var i=0; i<20; i++) {
+  var box = createSprite(random(800, 2000), random(0,height), 100, 100);
+  obstacles.add(box);
+  }
 
-  // for (var i=0; i<4; i++) {
-  // var box = createSprite(random(0, width), random(0,height));
-  // box.addAnimation("normal", "./img/character.png");
-  // obstacles.add(box);
-  // }
-
-  ground = createSprite(random(0, width),500);
+  ground = createSprite(0, 550);
   ground.addImage(platformImg);
-
-  dude.sprite.depth = 20;
+  // obstacles.add(ground);
+  ground.debug = true;
 
 
 for (i=0; i<10; i++) {
   dot = createSprite(random(0, 2000), random(0,height));
   dot.addImage(thingImg);
-  dot.setCollider("circle", 0, 0, 30);
   dot.debug = true;
   items.add(dot);
   }
 
-
-ground.debug = true;
-
   textSize(50);
-}
+
+} //end of the setup function
 
 
 
 function draw () {
   clear();
   image(bgImg, -400,0);
-  drawSprites();
+  // dude.movementLimits();
 
   fill(255);
   text(keyCode, 33,65);
 
-  camera.position.x = dude.sprite.position.x;
+//camera movements and their restrictions
+  if (dude.sprite.position.x > mapWidth - 780) {
+    camera.position.x = mapWidth - 780;
+  } else if (dude.sprite.position.x < 100) {
+    camera.position.x = 100;
+  } else {
+    camera.position.x = dude.sprite.position.x;
+  }
   camera.position.y = height/2; //maybe
   camera.zoom = 1;
 
-  dude.movementLimits();
+
 
   if (keyDown(UP_ARROW)) {
     dude.sprite.changeAnimation("jumping");
@@ -120,36 +127,51 @@ function draw () {
   if (keyDown(RIGHT_ARROW)) {
     dude.sprite.changeAnimation("running");
     dude.sprite.mirrorX(1);
-    dude.sprite.velocity.x = 7;
+    dude.sprite.velocity.x = dude.speed;
 
   }
 
   if (keyDown(LEFT_ARROW)) {
     dude.sprite.changeAnimation("running");
     dude.sprite.mirrorX(-1);
-    dude.sprite.velocity.x = -7;
+    dude.sprite.velocity.x = -dude.speed;
   }
 
+  if (keyIsDown(90)) {
+    dude.sprite.changeAnimation("hipunch");
+    console.log("High Punch");
+  }
+
+  if (keyDown(88)) {
+    dude.sprite.changeAnimation("lowpunch");
+    console.log("Low Punch");
+  }
+
+  
   dude.sprite.collide(obstacles);
   dude.sprite.overlap(items, collect);
 
   function collect(collector, collected){
-    collected.remove();
     dude.sprite.scale += 0.15;
+    collected.remove();
   }
-
-  //Or check a point against the pixels of a sprite animation or image
- //if the bottom of the triangle is not overlapping with the non transparent pixels
- //of the platform make it fall
- if(ground.overlapPixel(dude.x, dude.y+30)===false){
-   dude.sprite.velocity.y += GRAVITY;
-}
- //if the bottom of the triangle is overlapping the non transparent pixels
- //of the platform move it up one pixel until it doesn't overlap anymore
- while(ground.overlapPixel(dude.x, dude.y+30)){
-   dude.y--;
+drawSprites();
+// function gravityController (dude) {
+//   gravity += 2;
+//  if(obstacles.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)===false){
+//    dude.sprite.velocity.y = gravity;
+//       console.log("the if loop is running");
+// }
+//
+ while(ground.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)){
+   dude.sprite.position.y--;
    dude.sprite.velocity.y = 0;
+   console.log("the while loop is running");
    }
+// dude.sprite.velocity.y = 15;
+//
+//
+// }
 
 
 
@@ -157,15 +179,14 @@ function draw () {
 
 } //end of the draw function
 
+
+
 function keyReleased() {
   dude.sprite.velocity.x = 0;
   dude.sprite.velocity.y = 15;
   dude.sprite.changeAnimation("standing");
   return false; // prevent any default behavior
 }
-
-
-
 
 //prevent default behavior of scrolling the browser window with arrow keys
 //This is a temporary workaround until a fix window.
