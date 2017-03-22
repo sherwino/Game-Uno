@@ -1,4 +1,9 @@
-#bg {
+body {
+  background: black;
+}
+
+#defaultCanvas0 {
   margin: 0 25%;
-  position:relative;
+  top: 20px;
+  position:absolute;
 }
