@@ -6,7 +6,7 @@ console.log("Animate.js is LOADED");
 //this js file is for the hero constructor and associated sprites, and movement functions
 
 
-var dude, obstacles, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity, bgImg, movementLimits, mapWidth = 10906;
+var dude, obstacles, collect, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity, bgImg, movementLimits, mapWidth = 10906;
 
 function Hero (name) {
   this.name = name;
@@ -43,15 +43,28 @@ function setup () {
   items = new Group ();
   projectiles = new Group ();
 
-  for (var i=0; i<20; i++) {
-  var box = createSprite(random(800, 2000), random(0,height), 100, 100);
+setInterval(function () {
+  for (var i=0; i<10; i++) {
+  var box = createSprite(random(800, 5000), random(0,height), 100, 100);
+  box.velocity.x -= random(20, 40);
+  obstacles.collide(dude.sprite);
   obstacles.add(box);
-  }
+  box.life = 300;
+} //close for loop
+}, 2000);
+
+markerMissle = function () {
+  marker = createSprite(dude.sprite.position.x, dude.sprite.position.y);
+  marker.addImage(markerImg);
+  marker.setSpeed(10+dude.sprite.getSpeed());
+  marker.life = 300;
+  projectiles.add(marker);
+};
 
   ground = createSprite(0, 688);
   ground.addImage(platformImg);
   ground.immovable = true;
-  // obstacles.add(ground);
+  obstacles.add(ground);
   ground.debug = true;
 
 
@@ -63,7 +76,9 @@ for (i=0; i<10; i++) {
   items.add(dot);
   }
 
-  textSize(50);
+  textSize(25);
+
+
 
 } //end of the setup function
 
@@ -72,10 +87,16 @@ for (i=0; i<10; i++) {
 function draw () {
   clear();
   image(bgImg, -400,0);
+
   fill(255);
-  text(keyCode, 33,65);
+  text("Game-Uno", -300, 50);
+  text("by Sherwino", -300, 75);
+  text(keyCode, -300, 100);
   movementLimits();
+  dude.sprite.collide(obstacles);
+  dude.sprite.collide(projectiles);
   drawSprites();
+
 // function gravityController (dude) {
 //   gravity += 2;
 //  if(obstacles.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)===false){
@@ -146,11 +167,13 @@ movementLimits = function () {
     }
 
     if (keyWentDown("c")){
-      marker = createSprite(dude.sprite.position.x, dude.sprite.position.y);
-      marker.addImage(markerImg);
-      marker.setSpeed(10+dude.sprite.getSpeed(), dude.sprite.rotation);
-      marker.life = 800;
-      projectiles.add(marker);
+      markerMissle();
+    }
+
+    if (keyDown(16)) {
+        dude.speed = 12;
+      } else{
+        dude.speed = 7;
       }
 
     if (dude.sprite.position.x > mapWidth) {
@@ -173,8 +196,7 @@ movementLimits = function () {
       dude.sprite.velocity.y = 0;
     }
 
-    dude.sprite.collide(obstacles);
-    dude.sprite.collide(projectiles);
+
     projectiles.collide(obstacles);
     dude.sprite.overlap(items, collect);
 

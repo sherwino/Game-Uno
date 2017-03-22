@@ -147,7 +147,7 @@ function draw () {
     console.log("Low Punch");
   }
 
-  
+
   dude.sprite.collide(obstacles);
   dude.sprite.overlap(items, collect);
 
@@ -207,3 +207,35 @@ window.addEventListener('keyup',
         keys[e.keyCode] = false;
     },
 false);
+
+
+
+start() {
+              this.interval = setInterval(this.draw.bind(this), 18, this.ctx);
+          }
+          pause() {
+              clearInterval(this.interval);
+              this.interval = undefined;
+          }
+          gameOver() {
+              clearInterval(this.interval);
+              this.interval = undefined;
+
+              dianelisinsua [7:05 PM]
+              handleKeyPress(e) {
+                             let code = e.keyCode;
+                             switch (code) {
+                                 case 32:
+                                     this.interval ? this.pause() : this.start();
+                                     break;
+                                 case 13:
+                                     this.restart();
+                                     break;
+                                 case 37:
+                                     this.doodle.dx = -5;
+                                     break;
+                                 case 39:
+                                     this.doodle.dx = 5;
+                                     default: return null;
+                             }
+                         }
