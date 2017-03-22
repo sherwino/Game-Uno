@@ -1,0 +1,9 @@
+body {
+  background: black;
+}
+
+#defaultCanvas0 {
+  margin: 0 25%;
+  top: 20px;
+  position:absolute;
+}
