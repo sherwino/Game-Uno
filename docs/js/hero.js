@@ -6,7 +6,7 @@ console.log("Animate.js is LOADED");
 //this js file is for the hero constructor and associated sprites, and movement functions
 
 
-var dude, obstacles, box, collect, jumping, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 15, bgImg, movementLimits, mapWidth = 10906;
+var dude, obstacles, box, collect, jumping, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 15, bgImg, movementLimits, mapWidth = 12285;
 
 function Hero (name) {
   this.name = name;
