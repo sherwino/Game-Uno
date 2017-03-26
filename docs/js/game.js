@@ -12,8 +12,18 @@ function CAMB () {
 
 } //closes Constructor function
 
-// $(document).ready(function() {
-// 
+// var mySound;
+//
+// // $(document).ready(function() {
+//   function preload() {
+//     mySound = loadSound('./aud/kens.mp3');
+//   }
+//
+//   function setup() {
+//     mySound.setVolume(0.2);
+//     mySound.play();
+//   }
+
 //   $(".overlay").on("click", function () {
 //   $(".overlay").animate ({opacity: '0.1'}, 1000);
 //
