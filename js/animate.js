@@ -221,7 +221,6 @@ start() {
               clearInterval(this.interval);
               this.interval = undefined;
 
-              dianelisinsua [7:05 PM]
               handleKeyPress(e) {
                              let code = e.keyCode;
                              switch (code) {

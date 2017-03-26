@@ -6,7 +6,7 @@ console.log("Animate.js is LOADED");
 //this js file is for the hero constructor and associated sprites, and movement functions
 
 
-var dude, obstacles, collect, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity, bgImg, movementLimits, mapWidth = 10906;
+var dude, obstacles, box, collect, jumping, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 15, bgImg, movementLimits, mapWidth = 10906;
 
 function Hero (name) {
   this.name = name;
@@ -33,10 +33,12 @@ function setup () {
   dude.sprite.addAnimation("lowpunch", "./img/hero/heroguy_lp.png");
   dude.sprite.depth = 20;
   dude.sprite.debug = true;
+  dude.sprite.mass = 20;
 
-  bgImg = loadImage("./img/bg.jpg");
-  platformImg = loadImage("./img/collision.png");
-  thingImg = loadImage("./img/thing.gif");
+
+  bgImg = loadImage("./img/bg1.jpg");
+  platformImg = loadImage("./img/floor_0_0.png");
+  thingImg = loadImage("./img/ss.png");
   markerImg = loadImage("./img/marker.png");
 
   obstacles = new Group ();
@@ -44,14 +46,16 @@ function setup () {
   projectiles = new Group ();
 
 setInterval(function () {
-  for (var i=0; i<10; i++) {
-  var box = createSprite(random(800, 5000), random(0,height), 100, 100);
-  box.velocity.x -= random(20, 40);
+  for (var i=0; i<4; i++) {
+  box = createSprite(random(800, 5000), random(0,height), 100, 100);
+  box.velocity.x -= random(5, 10);
   obstacles.collide(dude.sprite);
   obstacles.add(box);
-  box.life = 300;
+  box.life = 500;
+
 } //close for loop
 }, 2000);
+
 
 markerMissle = function () {
   marker = createSprite(dude.sprite.position.x, dude.sprite.position.y);
@@ -61,18 +65,20 @@ markerMissle = function () {
   projectiles.add(marker);
 };
 
-  ground = createSprite(0, 688);
-  ground.addImage(platformImg);
-  ground.immovable = true;
-  obstacles.add(ground);
-  ground.debug = true;
+  // ground = createSprite(-110, 715);
+  // ground.addImage(platformImg);
+  // ground.immovable = true;
+  //
+  // ground.visible = false;
+  // ground.debug = true;
+  // obstacles.add(ground);
 
 
 
 for (i=0; i<10; i++) {
-  dot = createSprite(random(90, 6000), random(0,height));
+  dot = createSprite(random(1320, 6000), random(0,height));
   dot.addImage(thingImg);
-  dot.debug = true;
+  dot.debug = false;
   items.add(dot);
   }
 
@@ -92,7 +98,9 @@ function draw () {
   text("Game-Uno", -300, 50);
   text("by Sherwino", -300, 75);
   text(keyCode, -300, 100);
+  dude.sprite.velocity.y += 1;
   movementLimits();
+  obstacles.displace(projectiles);
   dude.sprite.collide(obstacles);
   dude.sprite.collide(projectiles);
   drawSprites();
@@ -104,11 +112,11 @@ function draw () {
 //       console.log("the if loop is running");
 // }
 //
- while(ground.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)){
-   dude.sprite.position.y--;
-   dude.sprite.velocity.y = 0;
-   console.log("the while loop is running");
-   }
+ // while(ground.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)){
+ //   dude.sprite.position.y--;
+ //   dude.sprite.velocity.y = 0;
+ //   console.log("the while loop is running");
+ //   }
 // dude.sprite.velocity.y = 15;
 //
 //
@@ -132,11 +140,11 @@ movementLimits = function () {
       camera.position.y = height/2; //maybe
       camera.zoom = 1;
 
-
-
     if (keyDown(UP_ARROW)) {
       dude.sprite.changeAnimation("jumping");
       dude.sprite.velocity.y = dude.jump; //maybe
+      console.log(dude.sprite.velocity.y);
+
     }
 
     if (keyDown(DOWN_ARROW)) {
@@ -147,6 +155,7 @@ movementLimits = function () {
       dude.sprite.changeAnimation("running");
       dude.sprite.mirrorX(1);
       dude.sprite.velocity.x = dude.speed;
+      // dude.sprite.velocity.y = gravity;
 
     }
 
@@ -171,7 +180,7 @@ movementLimits = function () {
     }
 
     if (keyDown(16)) {
-        dude.speed = 12;
+        dude.speed = 20;
       } else{
         dude.speed = 7;
       }
@@ -186,8 +195,8 @@ movementLimits = function () {
       dude.sprite.velocity.x = 0;
     }
 
-    if (dude.sprite.position.y > height - 80) {
-      dude.sprite.position.y = height - 80;
+    if (dude.sprite.position.y > height - 29) {
+      dude.sprite.position.y = height - 29;
       dude.sprite.velocity.y = 0;
     }
 
@@ -197,6 +206,7 @@ movementLimits = function () {
     }
 
 
+
     projectiles.collide(obstacles);
     dude.sprite.overlap(items, collect);
 
@@ -204,11 +214,13 @@ movementLimits = function () {
       dude.sprite.scale += 0.15;
       collected.remove();
     }
+
 };
 
 function keyReleased() {
   dude.sprite.velocity.x = 0;
-  dude.sprite.velocity.y = 15;
+  // dude.sprite.velocity.y = 15;
+  jumping = false;
   dude.sprite.changeAnimation("standing");
   return false; // prevent any default behavior
 }

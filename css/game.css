@@ -3,7 +3,30 @@ body {
 }
 
 #defaultCanvas0 {
-  margin: 0 25%;
   top: 20px;
+  left: 400px;
   position:absolute;
+}
+
+/*.overlay {
+  background: url("../img/game-uno1.png");
+  opacity: 0.9;
+  background-size: 100%;
+  position: relative;
+  margin: 0% 16%;
+  width: 1365px;
+  height: 788px;
+  z-index: 5;
+}*/
+
+.titleText {
+  position: absolute;
+
+  font-size: 20px;
+  color: #fff;
+  font-family: 'Permanent Marker', cursive;
+  top: 0;
+  left: 10px;
+  margin: 5px;
+  z-index: 1;
 }
