@@ -32,7 +32,7 @@ function preload() {
 function setup () {
   createCanvas(1024,768);
   dude = new Hero ("Bob");
-  theme = loadSound('./aud/kens.mp3', loaded);
+  theme = loadSound('./aud/lips.mp3', loaded);
   running.setVolume(0.3);
   // running = loadSound('./aud/running.mp3');
 
