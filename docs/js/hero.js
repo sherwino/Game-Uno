@@ -37,7 +37,7 @@ function setup () {
 
 
   bgImg = loadImage("./img/bg1.jpg");
-  platformImg = loadImage("./img/floor_0_0.png");
+  // platformImg = loadImage("./img/floor_0_0.png");
   thingImg = loadImage("./img/ss.png");
   markerImg = loadImage("./img/marker.png");
 
