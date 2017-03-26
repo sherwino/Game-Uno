@@ -32,7 +32,7 @@ function setup () {
   dude.sprite.addAnimation("hipunch", "./img/hero/heroguy_hp1.png");
   dude.sprite.addAnimation("lowpunch", "./img/hero/heroguy_lp.png");
   dude.sprite.depth = 20;
-  dude.sprite.debug = true;
+  // dude.sprite.debug = true;
   dude.sprite.mass = 20;
 
 
