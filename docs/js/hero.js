@@ -1,16 +1,43 @@
-console.log("Animate.js is LOADED");
+console.log("hero.js is LOADED");
 
-//offline testing using these libraries
+//This is to prevent CORS errors in chrome while offline testing
+//Don't need it when I host the files using a node http server
 //"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --user-data-dir="C:/Chrome dev session2" --disable-web-security
+
+
 
 //this js file is for the hero constructor and associated sprites, and movement functions
 
+// function gameuno () {
+//   this.score = 0;
+//   this.levelCleared = false;
+//   this.GameOver = false;
+//   this.mapObject = 0;
+//   this.weapObject = 0;
+//   this.diffObject = 0;
 
-var dude, obstacles, lastPressed, box, collect, jumping, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 15, bgImg, movementLimits, mapWidth = 12085;
-var theme, npcAttack, runSound;
+  //ALl of the global variables I need for now until I refactor the code
+  var dude, obstacles, lastPressed, box, collect, jumping, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 15, bgImg, movementLimits, mapWidth = 12085;
+  var theme, npcAttack, runSound;
 
-function Hero (name) {
+//   //Object Array
+//   this.charObject = [
+//     { charac: "hero", standing: "./img/hero/heroguy9.png", runningStart: "./img/hero/heroguy1.png", runningEnd: "./img/hero/heroguy8.png",
+//       theme: "./aud/kens.mp3" },
+//
+//   ]
+//   }
+//
+// } //the whole game
+
+//Creates Protagonist Characters
+//Takes two arguments, player name, and the character that the player selected
+// gameuno.prototype.
+function Hero (name, charID, playerNum) {
   this.name = name;
+  this.character = charID;
+  this.player = playerNum;
+
   this.x = 200;
   this.y = height/2;
   this.health = 5;
@@ -32,7 +59,7 @@ function preload() {
 function setup () {
   createCanvas(1024,768);
   dude = new Hero ("Bob");
-  theme = loadSound('./aud/lips.mp3', loaded);
+  theme = loadSound('./aud/kens.mp3', loaded);
   running.setVolume(0.3);
   // running = loadSound('./aud/running.mp3');
 
@@ -116,7 +143,7 @@ for (i=0; i<10; i++) {
 
 function loaded(){
 theme.setVolume(0);
-theme.play();
+theme.loop();
 theme.setVolume(0.01, 0, 5);
 }
 
