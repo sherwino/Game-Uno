@@ -8,47 +8,70 @@ console.log("hero.js is LOADED");
 
 //this js file is for the hero constructor and associated sprites, and movement functions
 
-// function gameuno () {
-//   this.score = 0;
-//   this.levelCleared = false;
-//   this.GameOver = false;
-//   this.mapObject = 0;
-//   this.weapObject = 0;
-//   this.diffObject = 0;
+function Gameuno () {
+  this.score = 0;
+  this.levelCleared = false;
+  this.GameOver = false;
+  this.mapObject = 0;
+  this.weapObject = 0;
+  this.diffObject = 0;
+  //Object Array
+  this.charObject = [
+    { charac: "hero", standing: "./img/hero/heroguy9.png", runningStart: "./img/hero/heroguy1.png", runningEnd: "./img/hero/heroguy8.png",
+      theme: "./aud/kens.mp3"},
+  ];
 
-  //ALl of the global variables I need for now until I refactor the code
-  var dude, obstacles, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
-  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle;
+  //ALl of the global blank variables I need for now until I refactor the code
+  var dude,
+  obstacles,
+  lastPressed,
+  box,
+  collect,
+  jumping,
+  markerMissle,
+  ground,
+  dot,
+  items,
+  marker,
+  thingImg,
+  platformImg,
+  markerImg,
+  gravityController,
+  projectiles,
+  bgImg,
+  movementLimits,
+  theme,
+  npcAttack,
+  runSound;
 
-//   //Object Array
-//   this.charObject = [
-//     { charac: "hero", standing: "./img/hero/heroguy9.png", runningStart: "./img/hero/heroguy1.png", runningEnd: "./img/hero/heroguy8.png",
-//       theme: "./aud/kens.mp3" },
-//
-//   ]
-//   }
-//
-// } //the whole game
+// global world/game variables
+  var mapWidth = 12085;
+  var gravity = 15;
+
+
+
+} //closes the game construcor
 
 //Creates Protagonist Characters
 //Takes two arguments, player name, and the character that the player selected
-// gameuno.prototype.
-function Hero (name, charID, playerNum) {
+Gameuno.prototype._Hero = function (name, charID, playerNum) {
   this.name = name;
   this.character = charID;
   this.player = playerNum;
-  this.x = -200;
-  this.y = 340;
+
+  this.x = 200;
+  this.y = height/2;
   this.health = 5;
-  this.jump = -20;
+  this.jump = -10;
   this.speed = 7;
   this.sprite = createSprite(this.x, this.y, 60, 60);
 
-}
+};
 
 function preload() {
 
       bgImg = loadImage("./img/bg1.jpg");
+      // platformImg = loadImage("./img/floor_0_0.png");
       thingImg = loadImage("./img/ss.png");
       markerImg = loadImage("./img/marker.png");
       running = loadSound('./aud/running.mp3');
@@ -57,8 +80,10 @@ function preload() {
 function setup () {
   createCanvas(1024,768);
   dude = new Hero ("Bob");
-  theme = loadSound('./aud/reaching.mp3', loaded);
+  theme = loadSound('./aud/lips.mp3', loaded);
   running.setVolume(0.3);
+  // running = loadSound('./aud/running.mp3');
+
 
 
   dude.sprite.addAnimation("standing", "./img/hero/heroguy9.png", "./img/hero/heroguy9.png");
@@ -78,29 +103,16 @@ function setup () {
   items = new Group ();
   projectiles = new Group ();
 
-  ground = createSprite(-200, 400, 200, 50);
-  ground.visible = false;
-  setTimeout(function(){
-    ground.remove();
-    dude.sprite.velocity.y += gravity;
-    dropatTitle = true;
-  },4500);
-
-
   setInterval(function () {
-    for (var i=0; i<5; i++) {
-    bee = createSprite(random(800, 5000), random(100, height - 20));
-    bee.addAnimation("flying", "./img/bee1.png", "./img/bee6.png");
-    bee.friction = random(0.5, 0.99);
-    bee.mirrorX(-1);
-    bee.rotateToDirection = true;
-    // bee.velocity.x -= random(5, 10);
-    //force (acceleration), pointx, pointy
-    obstacles.add(bee);
-    bee.life = 2500;
+    for (var i=0; i<4; i++) {
+    box = createSprite(random(800, 5000), random(0,height), 100, 100);
+    box.velocity.x -= random(5, 10);
+    obstacles.collide(dude.sprite);
+    obstacles.add(box);
+    box.life = 500;
 
       } //close for loop
-    }, 40000); //close setinterval
+    }, 2000);
 
 
 markerMissle = function () {
@@ -137,13 +149,12 @@ for (i=0; i<10; i++) {
   textSize(25);
 
   runSound = function () {
-    if (keyDown(LEFT_ARROW) && !running.isPlaying() && dude.sprite.position.y > height - 40  ){
+    if (keyDown(LEFT_ARROW) && !running.isPlaying() && dude.sprite.position.y > height - 40 ){
       running.pan(-0.5);
       running.loop();
     } else if (keyDown(RIGHT_ARROW) && !running.isPlaying()&& dude.sprite.position.y > height - 40 ){
       running.pan(0.5);
       running.loop();
-
     } else if (keyDown(16)) {
       running.rate(1.25);
     }
@@ -157,38 +168,46 @@ theme.loop();
 theme.setVolume(0.01, 0, 5);
 }
 
+
+
 function draw () {
+  clear();
+  image(bgImg, -400,0);
 
-    clear();
-    image(bgImg, -400,0);
+  fill(255);
+  text("Game-Uno", -300, 50);
+  text("by Sherwino", -300, 75);
+  text(keyCode, -300, 100);
+  dude.sprite.velocity.y += 1;
+  movementLimits();
+  obstacles.displace(projectiles);
+  dude.sprite.collide(obstacles);
+  dude.sprite.collide(projectiles);
 
-    fill(255);
-    text("Game-Uno", -300, 50);
-    text("by Sherwino", -300, 75);
-    text(keyCode, -300, 100);
+  drawSprites();
 
-    dude.sprite.velocity.y += gravity;
-    movementLimits();
+// function gravityController (dude) {
+//   gravity += 2;
+//  if(obstacles.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)===false){
+//    dude.sprite.velocity.y = gravity;
+//       console.log("the if loop is running");
+// }
+//
+ // while(ground.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)){
+ //   dude.sprite.position.y--;
+ //   dude.sprite.velocity.y = 0;
+ //   console.log("the while loop is running");
+ //   }
+// dude.sprite.velocity.y = 15;
+//
+//
+// }
 
-    dude.sprite.collide(projectiles);
-    if(dude.sprite.collide(ground) && !dropatTitle) {
-      dude.sprite.velocity.y = 0;
-    }
 
-    for (i=0; i < obstacles.length; i++) {
-      obstacles.displace(projectiles);
-      dude.sprite.collide(obstacles);
-      obstacles[i].attractionPoint(random(0.5, 1.2), dude.sprite.position.x, dude.sprite.position.y);
-      obstacles.collide(dude.sprite);
-      //since the force keeps incrementing the speed you can
-      //set a limit to it with maxSpeed
-      obstacles[i].maxSpeed = random(10, 20);
-    }
 
-    drawSprites();
+
 
 } //end of the draw function
-
 
 movementLimits = function () {
   //camera movements and their restrictions
@@ -204,10 +223,9 @@ movementLimits = function () {
 
     if (keyDown(UP_ARROW)) {
       dude.sprite.changeAnimation("jumping");
+      dude.sprite.velocity.y = dude.jump; //maybe
 
-      if (dude.sprite.position.y > height - 80 || dude.sprite.collide(obstacles)) {
-            dude.sprite.velocity.y = dude.jump; //maybe
-      }
+
     }
 
     if (keyDown(DOWN_ARROW)) {
@@ -245,8 +263,7 @@ movementLimits = function () {
 
     if (keyIsDown(90)) {
       dude.sprite.changeAnimation("hipunch");
-      console.log(punchcount);
-      punchcount++;
+      console.log("High Punch");
     }
 
     if (keyDown(88)) {
@@ -263,19 +280,6 @@ movementLimits = function () {
       } else{
         dude.speed = 7;
       }
-      //finally a pause game function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if (keyWentDown("p") && !paused){
-      updateSprites(false);
-      theme.stop();
-      console.log("GAME PAUSED");
-      paused = true;
-
-    } else if (keyWentDown("p") && paused) {
-      updateSprites(true);
-      theme.loop();
-      console.log("GAME STARTED");
-      paused = false;
-    }
 
     if (dude.sprite.position.x > mapWidth) {
       dude.sprite.position.x = mapWidth;
@@ -305,13 +309,9 @@ movementLimits = function () {
           theme.setVolume(0.3, 0, 4);
         }
 
-
-
     projectiles.collide(obstacles);
     dude.sprite.overlap(items, collect);
-    // if (dude.sprite.collide(obstacles)){
-    //   deadTime = Date.now();
-    // }
+
     function collect(collector, collected){
       dude.sprite.scale += 0.15;
       collected.remove();
@@ -325,17 +325,16 @@ function keyReleased() {
   } else if (lastPressed === "left"){
     dude.sprite.setSpeed(0, 180);
   }
-
   running.stop();
-  // theme.stop();
+
   // dude.sprite.velocity.y = 15;
+  jumping = false;
   dude.sprite.changeAnimation("standing");
   return false; // prevent any default behavior
 }
 
 //prevent default behavior of scrolling the browser window with arrow keys
 //This is a temporary workaround until a fix window.
-
 
 var keys = {};
 window.addEventListener("keydown",

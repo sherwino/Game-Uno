@@ -121,26 +121,6 @@ for (i=0; i<10; i++) {
 
 } //end of the setup function
 
-
-
-
-
-function draw () {
-  clear();
-  image(bgImg, -400,0);
-
-  fill(255);
-  text("Game-Uno", -300, 50);
-  text("by Sherwino", -300, 75);
-  text(keyCode, -300, 100);
-  dude.sprite.velocity.y += 1;
-  movementLimits();
-  obstacles.displace(projectiles);
-  dude.sprite.collide(obstacles);
-  dude.sprite.collide(projectiles);
-
-  drawSprites();
-
 // function gravityController (dude) {
 //   gravity += 2;
 //  if(obstacles.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)===false){
@@ -158,11 +138,171 @@ function draw () {
 //
 // }
 
+// var deadTime = 0;
+// var startTime = new Date().getTime();
+// var elapsedTime = startTime - deadTime;
 
 
+// function pauseMe () {
+//    if(keyDown(112)) {
+//      paused = true;
+//    } else {
+//      paused = false;
+//    }
+//     return paused;
+//  }
+
+if (paused === false) {
+    }     //end of the pause statement
+
+  pauseMe();
+
+  pauseMe = function () {
+  for (i=0; i < allSprites.length; i++)
+  if(mouseIsPressed)
+    allSprites[i].play();
+  else
+    allSprites[i].stop();
+  };
+
+    // text(elapsedTime, -300, 125);
+
+const G = 2; //万有引力定数
+
+class Ball {
+  constructor(location, velocity, mass){
+    //位置
+    this.location = location;
+    //速度
+    this.velocity = velocity;
+    //加速度
+    this.acceleration;
+    //質量
+    this.mass = mass;
+    this.init();
+  }
+  applyForce(force){
+    let _force = p5.Vector.div(force, this.mass);
+    this.acceleration.add(_force);
+  }
+  getFriction(){
+    let friction = this.velocity.copy();
+    friction.normalize();
+    friction.mult(-0.1);
+    return friction;
+  }
+  init(){
+    this.acceleration = this.velocity.copy();
+    this.acceleration.normalize();
+    this.acceleration.mult(5);
+  }
+  attract(ball){
+    let force = p5.Vector.sub(this.location, ball.location);
+    let distance = force.mag();
+    if(distance < 5) distance = 5;
+    if(distance > 25) distance = 25;
+    force.normalize();
+    let strength = (G * this.mass * ball.mass) / ( distance * distance );
+    force.mult(strength);
+    return force;
+  }
+  update(){
+    let friction = this.getFriction();
+    this.applyForce(friction);
+    this.velocity.limit(5);
+    this.velocity.add(this.acceleration);
+    this.location.add(this.velocity);
+  }
+  draw(){
+    let force = p5.Vector.sub(createVector(window.innerWidth, window.innerHeight), this.location);
+    let distance = force.mag() * 0.1;
+    fill(distance, 80, 100);
+    ellipse(this.location.x, this.location.y, this.mass * 2, this.mass * 2);
+  }
+}
+
+class Attractor {
+  constructor(){
+    this.location = createVector(window.innerWidth/2, window.innerHeight/2);
+    this.mass = 200;
+  }
+  draw(){
+    fill(50, 80, 100);
+    ellipse(this.location.x, this.location.y, this.mass / 2, this.mass / 2);
+  }
+  attract(ball){
+    let force = p5.Vector.sub(this.location, ball.location);
+    let distance = force.mag();
+    if(distance < 5) distance = 5;
+    if(distance > 25) distance = 25;
+    force.normalize();
+    let strength = (G * this.mass * ball.mass) / ( distance * distance );
+    force.mult(strength);
+    return force;
+  }
+}
+
+let ball = [];
+let count = 50;
+let a;
+
+function setup(){
+  createCanvas(window.innerWidth, window.innerHeight);
+  colorMode(HSB, 100);
+  for(var i = 0; i < count; i++){
+    let angle = Math.PI / 180 * (360 / count * i);
+    let location = createVector(window.innerWidth / 2 + 60 * Math.cos(angle), window.innerHeight / 2 + 60 * Math.sin(angle));
+    let velocity = createVector(Math.cos(angle + Math.PI / 180 * 45), Math.sin(angle + Math.PI / 180 * 45));
+    velocity.mult(10);
+    ball.push(new Ball(location, velocity, Math.random()*10 + 1));
+  }
+
+  a = new Attractor();
+  noStroke();
+}
+
+function draw(){
+
+  background(100,0,100,10);
+
+  a.draw();
+
+  for(var i = 0; i < count; i++){
+    let force = a.attract(ball[i]);
+    ball[i].applyForce(force);
+    for(var j = 0; j < count; j++){
+      if(i !== j){
+        let _force = ball[i].attract(ball[j]);
+        ball[i].applyForce(_force);
+      }
+    }
+    ball[i].update();
+    ball[i].draw();
+  }
+}
+
+function draw () {
+  if (!paused) {
+  clear();
+  image(bgImg, -400,0);
+
+  fill(255);
+  text("Game-Uno", -300, 50);
+  text("by Sherwino", -300, 75);
+  text(keyCode, -300, 100);
+  dude.sprite.velocity.y += 1;
+  movementLimits();
+  obstacles.displace(projectiles);
+  dude.sprite.collide(obstacles);
+  dude.sprite.collide(projectiles);
+
+  drawSprites();
+  } //close the pause function
 
 
 } //end of the draw function
+
+
 
 movementLimits = function () {
   //camera movements and their restrictions
@@ -306,3 +446,20 @@ window.addEventListener('keyup',
         keys[e.keyCode] = false;
     },
 false);
+
+// function gravityController (dude) {
+//   gravity += 2;
+//  if(obstacles.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)===false){
+//    dude.sprite.velocity.y = gravity;
+//       console.log("the if loop is running");
+// }
+//
+ // while(ground.overlapPixel(dude.sprite.position.x, dude.sprite.position.y+30)){
+ //   dude.sprite.position.y--;
+ //   dude.sprite.velocity.y = 0;
+ //   console.log("the while loop is running");
+ //   }
+// dude.sprite.velocity.y = 15;
+//
+//
+// }
