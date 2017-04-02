@@ -1,7 +1,9 @@
 console.log("Animate.js is LOADED");
 
-//offline testing using these libraries
+//This is to prevent CORS errors in chrome while offline testing
+//Don't need it when I host the files using a node http server
 //"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --user-data-dir="C:/Chrome dev session2" --disable-web-security
+
 
 //this js file is for the hero constructor and associated sprites, and movement functions
 
@@ -65,6 +67,24 @@ function setup () {
 
       } //close for loop
     }, 2000);
+
+    // bee.draw = function() {
+    //
+    //   //the center of the sprite will be point 0,0
+    //   //"this" in this function will reference the sprite itself
+    //   fill(237,205,0);
+    //
+    //   //make the ellipse stretch in the sprite direction
+    //   //proportionally to its speed
+    //   push();
+    //   rotate(radians(this.getDirection()));
+    //   ellipse(0,0, 100+this.getSpeed(), 100-this.getSpeed());
+    //   pop();
+    //
+    //   //this.deltaX and this.deltaY are the position increment
+    //   //since the last frame, move the face image toward the direction
+    //   image(face, this.deltaX*2,this.deltaY*2);
+    //   }
 
 
 markerMissle = function () {
@@ -151,6 +171,25 @@ for (i=0; i<10; i++) {
 //    }
 //     return paused;
 //  }
+
+
+// function gameuno () {
+//   this.score = 0;
+//   this.levelCleared = false;
+//   this.GameOver = false;
+//   this.mapObject = 0;
+//   this.weapObject = 0;
+//   this.diffObject = 0;
+
+//   //Object Array
+//   this.charObject = [
+//     { charac: "hero", standing: "./img/hero/heroguy9.png", runningStart: "./img/hero/heroguy1.png", runningEnd: "./img/hero/heroguy8.png",
+//       theme: "./aud/kens.mp3" },
+//
+//   ]
+//   }
+//
+// } //the whole game
 
 if (paused === false) {
     }     //end of the pause statement

@@ -1,34 +1,14 @@
 console.log("hero.js is LOADED");
 
-//This is to prevent CORS errors in chrome while offline testing
-//Don't need it when I host the files using a node http server
-//"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --user-data-dir="C:/Chrome dev session2" --disable-web-security
-
-
 
 //this js file is for the hero constructor and associated sprites, and movement functions
 
-// function gameuno () {
-//   this.score = 0;
-//   this.levelCleared = false;
-//   this.GameOver = false;
-//   this.mapObject = 0;
-//   this.weapObject = 0;
-//   this.diffObject = 0;
 
   //ALl of the global variables I need for now until I refactor the code
-  var dude, obstacles, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
-  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle;
+  var dude, beeSquad, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
+  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad;
 
-//   //Object Array
-//   this.charObject = [
-//     { charac: "hero", standing: "./img/hero/heroguy9.png", runningStart: "./img/hero/heroguy1.png", runningEnd: "./img/hero/heroguy8.png",
-//       theme: "./aud/kens.mp3" },
-//
-//   ]
-//   }
-//
-// } //the whole game
+
 
 //Creates Protagonist Characters
 //Takes two arguments, player name, and the character that the player selected
@@ -74,9 +54,10 @@ function setup () {
 
 
 
-  obstacles = new Group ();
+  // obstacles = new Group ();
   items = new Group ();
   projectiles = new Group ();
+  beeSquad = new Group ();
 
   ground = createSprite(-200, 400, 200, 50);
   ground.visible = false;
@@ -87,20 +68,23 @@ function setup () {
   },4500);
 
 
-  setInterval(function () {
+  // setInterval(function () {
     for (var i=0; i<5; i++) {
     bee = createSprite(random(800, 5000), random(100, height - 20));
     bee.addAnimation("flying", "./img/bee1.png", "./img/bee6.png");
+
     bee.friction = random(0.5, 0.99);
     bee.mirrorX(-1);
     bee.rotateToDirection = true;
+    bee.flipped = false;
     // bee.velocity.x -= random(5, 10);
     //force (acceleration), pointx, pointy
-    obstacles.add(bee);
-    bee.life = 2500;
-
+    beeSquad.add(bee);
+    // bee.life = 2500;
+    beeCreated = true;
+    console.log("A bee has been created");
       } //close for loop
-    }, 40000); //close setinterval
+    // }, 20000); //close setinterval
 
 
 markerMissle = function () {
@@ -125,7 +109,7 @@ markerMissle = function () {
   // ground.debug = true;
   // obstacles.add(ground);
 
-
+ // && !beeFlipped
 
 for (i=0; i<10; i++) {
   dot = createSprite(random(1320, 6000), random(0,height));
@@ -169,22 +153,8 @@ function draw () {
 
     dude.sprite.velocity.y += gravity;
     movementLimits();
-
-    dude.sprite.collide(projectiles);
-    if(dude.sprite.collide(ground) && !dropatTitle) {
-      dude.sprite.velocity.y = 0;
-    }
-
-    for (i=0; i < obstacles.length; i++) {
-      obstacles.displace(projectiles);
-      dude.sprite.collide(obstacles);
-      obstacles[i].attractionPoint(random(0.5, 1.2), dude.sprite.position.x, dude.sprite.position.y);
-      obstacles.collide(dude.sprite);
-      //since the force keeps incrementing the speed you can
-      //set a limit to it with maxSpeed
-      obstacles[i].maxSpeed = random(10, 20);
-    }
-
+    projectilesDestroyThings(beeSquad);
+    npcsChaseYou(beeSquad);
     drawSprites();
 
 } //end of the draw function
@@ -205,7 +175,7 @@ movementLimits = function () {
     if (keyDown(UP_ARROW)) {
       dude.sprite.changeAnimation("jumping");
 
-      if (dude.sprite.position.y > height - 80 || dude.sprite.collide(obstacles)) {
+      if (dude.sprite.position.y > height - 80 || dude.sprite.collide(beeSquad)) {
             dude.sprite.velocity.y = dude.jump; //maybe
       }
     }
@@ -297,6 +267,28 @@ movementLimits = function () {
       dude.sprite.velocity.y = 0;
     }
 
+    if(dude.sprite.collide(ground) && !dropatTitle) {
+      dude.sprite.velocity.y = 0;
+    }
+
+    //temporary function this is going to fine tuned later to work only when the bee has been rotated upside down.
+    //Just need to find out from what angle to what angle will the function run and that will help set those values.
+    if (beeCreated) { //only run this if the bee has been created, and if the bee hasn't already been flipped.
+      for (i=0; i < beeSquad.length; i++){
+      if (dude.sprite.position.x < beeSquad[i].position.x && beeSquad[i].flipped === false){
+            beeSquad[i].mirrorY(-1);
+            beeSquad[i].flipped = true;
+      } //end of if position statement
+
+      if (dude.sprite.position.x > beeSquad[i].position.x && beeSquad[i].flipped === true){
+            beeSquad[i].mirrorY(1);
+            beeSquad[i].flipped = false;
+      } //end of if position statement
+    } //end of for loop
+  } // end of if bee created conditional
+
+    //Controls the volume of the theme song as you move away from the title screen.
+    //Later need to make this same if statment change the song to a boss song.
     if (dude.sprite.position.x < 400) {
         theme.setVolume(0.1, 0, 1);
     } else if (dude.sprite.position.x > 500) {
@@ -307,9 +299,9 @@ movementLimits = function () {
 
 
 
-    projectiles.collide(obstacles);
+
     dude.sprite.overlap(items, collect);
-    // if (dude.sprite.collide(obstacles)){
+    // if (dude.sprite.collide(beeSquad)){
     //   deadTime = Date.now();
     // }
     function collect(collector, collected){
@@ -317,6 +309,33 @@ movementLimits = function () {
       collected.remove();
     }
 
+};
+
+projectilesDestroyThings = function(group) {
+  dude.sprite.collide(projectiles);
+  projectiles.collide(group);
+
+  for (i=0; i < group.length; i++) {
+    if (projectiles.overlap(group[i])) {
+      group[i].remove();
+    }
+
+    dude.sprite.collide(group);
+
+  }
+
+}; //end of the projectilesDestroyThings function
+
+npcsChaseYou = function (npcGroup) {
+  if (npcGroup.length > 0){
+    for (i=0; i < npcGroup.length; i++) {
+      npcGroup[i].attractionPoint(random(0.5, 1.2), dude.sprite.position.x, dude.sprite.position.y);
+      npcGroup[i].collide(dude.sprite);
+      //since the force keeps incrementing the speed you can
+      //set a limit to it with maxSpeed
+      npcGroup[i].maxSpeed = random(10, 20);
+    }
+  }
 };
 
 function keyReleased() {
