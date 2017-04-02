@@ -6,7 +6,7 @@ console.log("hero.js is LOADED");
 
   //ALl of the global variables I need for now until I refactor the code
   var dude, beeSquad, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
-  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad;
+  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy;
 
 
 
@@ -35,7 +35,7 @@ function preload() {
 }
 
 function setup () {
-  createCanvas(1024,768);
+  createCanvas(1300,768);
   dude = new Hero ("Bob");
   theme = loadSound('./aud/reaching.mp3', loaded);
   running.setVolume(0.3);
@@ -68,19 +68,19 @@ function setup () {
   },4500);
 
 
-  // setInterval(function () {
     for (var i=0; i<5; i++) {
     bee = createSprite(random(800, 5000), random(100, height - 20));
     bee.addAnimation("flying", "./img/bee1.png", "./img/bee6.png");
+    bee.addAnimation("destroyed", "./img/xplo-1.png", "./img/xplo-9.png");
 
     bee.friction = random(0.5, 0.99);
     bee.mirrorX(-1);
     bee.rotateToDirection = true;
     bee.flipped = false;
+    bee.destroyed = false;
+    bee.attack = 1;
     // bee.velocity.x -= random(5, 10);
-    //force (acceleration), pointx, pointy
     beeSquad.add(bee);
-    // bee.life = 2500;
     beeCreated = true;
     console.log("A bee has been created");
       } //close for loop
@@ -141,6 +141,14 @@ theme.loop();
 theme.setVolume(0.01, 0, 5);
 }
 
+function explodeEnemy (enemy) {
+  enemy.changeAnimation("destroyed");
+  setTimeout(function(){
+    enemy.remove();
+    projectiles.remove();
+},500);
+}
+
 function draw () {
 
     clear();
@@ -161,7 +169,9 @@ function draw () {
 
 
 movementLimits = function () {
+
   //camera movements and their restrictions
+  //camera is set to follow  the protagonnist only
     if (dude.sprite.position.x > mapWidth - 780) {
       camera.position.x = mapWidth - 780;
     } else if (dude.sprite.position.x < 180) {
@@ -171,6 +181,8 @@ movementLimits = function () {
     }
       camera.position.y = height/2; //maybe
       camera.zoom = 1;
+
+      //here are all of the button press functions for the main character
 
     if (keyDown(UP_ARROW)) {
       dude.sprite.changeAnimation("jumping");
@@ -246,7 +258,8 @@ movementLimits = function () {
       console.log("GAME STARTED");
       paused = false;
     }
-
+    //map limits for the character
+    //need to send to a seperate function and it needs to take arguments for the NPCs
     if (dude.sprite.position.x > mapWidth) {
       dude.sprite.position.x = mapWidth;
       dude.sprite.velocity.x = 0;
@@ -317,8 +330,9 @@ projectilesDestroyThings = function(group) {
 
   for (i=0; i < group.length; i++) {
     if (projectiles.overlap(group[i])) {
-      group[i].remove();
+      explodeEnemy(group[i]);
     }
+
 
     dude.sprite.collide(group);
 
