@@ -7,8 +7,8 @@ console.log("hero.js is LOADED");
   //ALl of the global variables I need for now until I refactor the code
   var dude, beeSquad, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
   var theme, bossTheme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy, startGame = false;
-  var showHealthbar, healthShowing,stungbyBee = false, bittenbyBee = false;
-  var firstWaveComplete, secondWaveComplete, thirdWaveComplete, fourthWaveComplete, fifthWaveComplete, sixthWaveComplete, boatImg, boat;
+  var showHealthbar, healthShowing,stungbyBee = false, bittenbyBee = false, finalWaveComplete, bittenbyDragon;
+  var firstWaveComplete, secondWaveComplete, thirdWaveComplete, fourthWaveComplete, fifthWaveComplete, sixthWaveComplete, boatImg, boat, bossWaveComplete, bossDragon, dragon, bossImg, dragonCreated;
 
 
 //Creates Protagonist Characters
@@ -35,6 +35,7 @@ function preload() {
       boatImg = loadImage("./img/Fanboat.png");
       running = loadSound('./aud/running.mp3');
       bossTheme = loadSound('./aud/boss.mp3');
+      bossImg = loadImage("./img/boss/drag.png");
 }
 
 function setup () {
@@ -83,7 +84,7 @@ createBees = function (num) {
     bee.addAnimation("flying", "./img/bee1.png", "./img/bee6.png");
     bee.addAnimation("destroyed", "./img/xplo-1.png", "./img/xplo-9.png");
 
-    bee.friction = random(0.5, 0.99);
+    bee.friction = random(0.9, 0.99);
     bee.mirrorX(-1);
     bee.rotateToDirection = true;
     bee.flipped = false;
@@ -100,7 +101,8 @@ createBees = function (num) {
 markerMissle = function () {
   marker = createSprite(dude.sprite.position.x, dude.sprite.position.y);
   marker.addImage(markerImg);
-  marker.scale = 0.5;
+  marker.addAnimation("destroyed", "./img/xplo-1.png", "./img/xplo-9.png");
+  marker.scale = 0.8;
   if (lastPressed === "left") {
     marker.setSpeed(10+dude.sprite.getSpeed(), 180);
     marker.mirrorX(-1);
@@ -118,6 +120,16 @@ for (i=0; i<10; i++) {
   dot.debug = false;
   items.add(dot);
   }
+
+  bossDragon = function() {
+    dragon = createSprite(11000, 400, 20, 20);
+    dragon.addImage(bossImg);
+    dragon.attack = 5;
+    dragon.health = 100;
+    dragon.immovable = true;
+    dragon.debug = false;
+    dragonCreated = true;
+  };
 
   textSize(25);
 
@@ -170,7 +182,9 @@ function draw () {
       movementLimits();
       npcGenerator();
       projectilesDestroyThings(beeSquad);
+      projectilesAffectDragons();
       npcsChaseYou(beeSquad);
+      bossChaseYou(dragon);
       healthMonitor();
       drawSprites();
     }
@@ -297,6 +311,13 @@ movementLimits = function () {
       boat.velocity.y = 0;
     }
 
+    if (dragonCreated){
+      if (dragon.position.y > 548) {
+      dragon.position.y = 548;
+      dragon.velocity.y = 0;
+      }
+    }
+
     if (dude.sprite.position.y < 40) {
       dude.sprite.position.y = 40;
       dude.sprite.velocity.y = 0;
@@ -310,6 +331,10 @@ movementLimits = function () {
       dude.sprite.collide(boat);
       boat.velocity.x = 1.5;
       dude.sprite.position.x = boat.position.x;
+    }
+
+    if(boat.position.x > 11436) {
+      boat.velocity.x = 0;
     }
     //temporary function this is going to fine tuned later to work only when the bee has been rotated upside down.
     //Just need to find out from what angle to what angle will the function run and that will help set those values.
@@ -338,6 +363,12 @@ movementLimits = function () {
     } //end of for loop
 } // end of if bee created conditional
 
+if (dragonCreated) {
+  if (dragon.overlap(dude.sprite) && !bittenbyDragon) {
+    bittenbyDragon = true;
+    npcsHurtYou(dragon.attack);
+  }
+}
 
     //Controls the volume of the theme song as you move away from the title screen.
     //Later need to make this same if statment change the song to a boss song.
@@ -347,7 +378,7 @@ movementLimits = function () {
         theme.setVolume(0.2, 0, 2);
       } else if (dude.sprite.position.x > 1000) {
           theme.setVolume(0.3, 0, 4);
-        } else if (dude.sprite.position.x > 7248) {
+        } else if (dude.sprite.position.x > 7480) {
           theme.stop();
           bossTheme.play();
         }
@@ -358,6 +389,7 @@ movementLimits = function () {
     // }
     function collect(collector, collected){
       dude.sprite.scale += 0.15;
+      dude.health += 5;
       collected.remove();
     }
 
@@ -373,13 +405,27 @@ projectilesDestroyThings = function(group) {
     if (projectiles.overlap(group[i])) {
       explodeEnemy(group[i]);
     }
-
-
     dude.sprite.collide(group);
 
   }
 
 }; //end of the projectilesDestroyThings function
+
+projectilesAffectDragons = function () {
+  if (dragonCreated) {
+  projectiles.collide(dragon);
+  for (i=0; i < projectiles.length; i++) {
+    if(projectiles[i].overlap(dragon)){
+        projectiles[i].changeAnimation("destroyed");
+        dragon.health -= 2;
+        setTimeout(projectiles[i].remove , 500);
+        if (dragon.health < 1){
+          dragon.remove();
+        }
+    } //if projectiles overlap
+  } //for loop
+} //if dragon created
+};
 
 
 //every 3seconds npcs could damage you again
