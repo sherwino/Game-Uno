@@ -1,5 +1,30 @@
 console.log("GAME.JS is loaded");
 
+$(document).ready(function() {
+  $("button").on("click", function () {
+  $(".overlay").animate({opacity: '0.1'}, 1000);
+  setTimeout(function(){
+    $(".overlay").hide();
+  }, 1200);
+
+  startGame = true;
+  }); //end of the onclick function
+
+  showHealthbar = function (val) {
+    if (val === true && !healthShowing) {
+      $(".healthOverlay").animate({opacity: '0.98'}, 1000);
+      healthShowing = true;
+    }
+  };
+
+
+
+
+
+
+
+}); // end of the document.ready function
+
 //Newgame Constructor Method
 
 function CAMB () {
@@ -77,7 +102,7 @@ function CAMB () {
 
 // var mySound;
 //
-// // $(document).ready(function() {
+
 //   function preload() {
 //     mySound = loadSound('./aud/kens.mp3');
 //   }
@@ -86,12 +111,3 @@ function CAMB () {
 //     mySound.setVolume(0.2);
 //     mySound.play();
 //   }
-
-//   $(".overlay").on("click", function () {
-//   $(".overlay").animate ({opacity: '0.1'}, 1000);
-//
-//   $(".overlay").hide(1500);
-//   $(".titleText").show(1000);
-// }); //end of the onclick function
-//
-// }); // end of the document.ready function

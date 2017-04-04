@@ -6,8 +6,8 @@ console.log("hero.js is LOADED");
 
   //ALl of the global variables I need for now until I refactor the code
   var dude, beeSquad, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
-  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy;
-
+  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy, startGame = false;
+  var showHealthbar, healthShowing;
 
 
 //Creates Protagonist Characters
@@ -17,12 +17,12 @@ function Hero (name, charID, playerNum) {
   this.name = name;
   this.character = charID;
   this.player = playerNum;
-  this.x = -200;
+  this.x = -240;
   this.y = 340;
   this.health = 5;
   this.jump = -20;
   this.speed = 7;
-  this.sprite = createSprite(this.x, this.y, 60, 60);
+  this.sprite = createSprite(this.x, this.y, 30, 60);
 
 }
 
@@ -59,13 +59,14 @@ function setup () {
   projectiles = new Group ();
   beeSquad = new Group ();
 
-  ground = createSprite(-200, 400, 200, 50);
+  ground = createSprite(-200, 450, 80, 50);
   ground.visible = false;
-  setTimeout(function(){
-    ground.remove();
-    dude.sprite.velocity.y += gravity;
-    dropatTitle = true;
-  },4500);
+    setTimeout(function(){
+      ground.remove();
+      dude.sprite.velocity.y = gravity;
+      dropatTitle = true;
+    },4500);
+
 
 
     for (var i=0; i<5; i++) {
@@ -87,9 +88,11 @@ function setup () {
     // }, 20000); //close setinterval
 
 
+
 markerMissle = function () {
   marker = createSprite(dude.sprite.position.x, dude.sprite.position.y);
   marker.addImage(markerImg);
+  marker.scale = 0.5;
   if (lastPressed === "left") {
     marker.setSpeed(10+dude.sprite.getSpeed(), 180);
     marker.mirrorX(-1);
@@ -97,19 +100,9 @@ markerMissle = function () {
     marker.setSpeed(10+dude.sprite.getSpeed(), 0);
     marker.mirrorX(1);
   }
-  marker.life = 300;
+  marker.life = 200;
   projectiles.add(marker);
 };
-
-  // ground = createSprite(-110, 715);
-  // ground.addImage(platformImg);
-  // ground.immovable = true;
-  //
-  // ground.visible = false;
-  // ground.debug = true;
-  // obstacles.add(ground);
-
- // && !beeFlipped
 
 for (i=0; i<10; i++) {
   dot = createSprite(random(1320, 6000), random(0,height));
@@ -133,6 +126,11 @@ for (i=0; i<10; i++) {
     }
   }; //end of the runSound function
 
+
+
+
+
+
 } //end of the setup function
 
 function loaded(){
@@ -149,22 +147,24 @@ function explodeEnemy (enemy) {
 },500);
 }
 
+//resize canvas function
+// var canvas = document.querySelector("canvas");
+//
+// window.addEventListener("resize", function(){
+//   canvas.setAttribute("width", window.innerWidth);
+// });
+
 function draw () {
+    if(startGame){
+      clear();
+      image(bgImg, -400,0);
 
-    clear();
-    image(bgImg, -400,0);
-
-    fill(255);
-    text("Game-Uno", -300, 50);
-    text("by Sherwino", -300, 75);
-    text(keyCode, -300, 100);
-
-    dude.sprite.velocity.y += gravity;
-    movementLimits();
-    projectilesDestroyThings(beeSquad);
-    npcsChaseYou(beeSquad);
-    drawSprites();
-
+      dude.sprite.velocity.y += gravity;
+      movementLimits();
+      projectilesDestroyThings(beeSquad);
+      npcsChaseYou(beeSquad);
+      drawSprites();
+    }
 } //end of the draw function
 
 
@@ -174,13 +174,15 @@ movementLimits = function () {
   //camera is set to follow  the protagonnist only
     if (dude.sprite.position.x > mapWidth - 780) {
       camera.position.x = mapWidth - 780;
-    } else if (dude.sprite.position.x < 180) {
-      camera.position.x = 180;
+    } else if (dude.sprite.position.x < 280) {
+      camera.position.x = 280;
+      // camera.position.y = dude.sprite.position.y;
     } else {
       camera.position.x = dude.sprite.position.x;
-    }
       camera.position.y = height/2; //maybe
       camera.zoom = 1;
+    }
+
 
       //here are all of the button press functions for the main character
 
@@ -270,6 +272,10 @@ movementLimits = function () {
       dude.sprite.velocity.x = 0;
     }
 
+    if (dude.sprite.position.x > 1637) {
+      showHealthbar(true);
+    }
+
     if (dude.sprite.position.y > height - 32) {
       dude.sprite.position.y = height - 32;
       dude.sprite.velocity.y = 0;
@@ -302,11 +308,11 @@ movementLimits = function () {
 
     //Controls the volume of the theme song as you move away from the title screen.
     //Later need to make this same if statment change the song to a boss song.
-    if (dude.sprite.position.x < 400) {
+    if (dude.sprite.position.x < 700) {
         theme.setVolume(0.1, 0, 1);
-    } else if (dude.sprite.position.x > 500) {
+    } else if (dude.sprite.position.x > 700) {
         theme.setVolume(0.2, 0, 2);
-      } else if (dude.sprite.position.x > 700) {
+      } else if (dude.sprite.position.x > 1000) {
           theme.setVolume(0.3, 0, 4);
         }
 
