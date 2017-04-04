@@ -12,7 +12,7 @@ $(document).ready(function() {
 
   //reset game via rotateToDirection
   $("button.playAgain").click(function(){
-    window.location.href="./game.html";
+    window.location.href="./index.html";
   });
 
   showHealthbar = function (val) {
