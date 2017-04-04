@@ -145,7 +145,7 @@ gameOver =  function() {
       $(".overlay").show();
       $(".overlay").animate({opacity: '0.95'}, 1000);
       $(".playAgain").show();
-      paused = true;
+      theme.stop();
     }
   };
 

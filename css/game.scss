@@ -159,10 +159,10 @@ width:380px;
 }
 
 .playAgain {
-	display:none;
-	position: absolute;
-	margin: 10% 0 0 5%;
-	height: 470px;
+  display:none;
+  float:left;
+  margin:10% 0 0 -70px;
+  height:470px;
 }
 
 .healthOverlay {
@@ -190,17 +190,17 @@ width:380px;
 
 #p1Score {
 background: green;
-opacity: 0.5;
+opacity: 0.1;
 }
 
 #gameTimer {
 background: red;
-opacity: 0.5;
+opacity: 0.1;
 }
 
 #p2Score {
 background: purple;
-opacity: 0.5;
+opacity: 0.1;
 }
 
 #p2 {
