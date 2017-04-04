@@ -158,6 +158,13 @@ width:380px;
 	}
 }
 
+.playAgain {
+	display:none;
+	position: absolute;
+	margin: 10% 0 0 5%;
+	height: 470px;
+}
+
 .healthOverlay {
 	margin:42px 15% 0 15%;
 	opacity:0.01;
@@ -170,34 +177,35 @@ width:380px;
   background: pink;
   height:50px;
   width:230px;
-  margin-right: 30px;
+  margin-right: 25px;
   display: inline-block;
 }
 
 #p1 {
-  background: aqua;
   margin: 0 30px 0 0;
   background-repeat: no-repeat;
   // background-position: center center;
-	background:url(../img/hero/h-health1.png)
+	background: url(../img/hero/h-health1.png)
 }
 
 #p1Score {
-background: yellow;
+background: green;
+opacity: 0.5;
 }
 
 #gameTimer {
 background: red;
+opacity: 0.5;
 }
 
 #p2Score {
 background: purple;
+opacity: 0.5;
 }
 
 #p2 {
-  background: green;
-  margin: 0 0 0 30px;
+  margin: 0 0 0 20px;
   background-repeat: no-repeat;
   // background-position: center center;
-	background:url(../img/hero/p2-health.png)
+	background: url(../img/hero/p2-health.png)
 }

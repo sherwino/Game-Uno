@@ -1,7 +1,7 @@
 console.log("GAME.JS is loaded");
 
 $(document).ready(function() {
-  $("button").on("click", function () {
+  $("button.newGame").on("click", function () {
   $(".overlay").animate({opacity: '0.1'}, 1000);
   setTimeout(function(){
     $(".overlay").hide();
@@ -10,6 +10,11 @@ $(document).ready(function() {
   startGame = true;
   }); //end of the onclick function
 
+  //reset game via rotateToDirection
+  $("button.playAgain").click(function(){
+    window.location.href="./game.html";
+  });
+
   showHealthbar = function (val) {
     if (val === true && !healthShowing) {
       $(".healthOverlay").animate({opacity: '0.98'}, 1000);
@@ -17,25 +22,108 @@ $(document).ready(function() {
     }
   };
 
+  healthMonitor = function() {
+    if (dude.health === 20){
+      $("#p1").css("background", "url(./img/hero/h-health2.png)");
+    }
+    if (dude.health === 15){
+      $("#p1").css("background", "url(./img/hero/h-health3.png)");
+    }
+    if (dude.health === 10){
+      $("#p1").css("background", "url(./img/hero/h-health4.png)");
+    }
+    if (dude.health === 5){
+      $("#p1").css("background", "url(./img/hero/h-health5.png)");
+    }
+    if (dude.health === 0){
+      $("#p1").css("background", "url(./img/hero/h-health6.png)");
+    }
+    if (dude.health < 0) {
+      $("#p1").css("background", "url(./img/hero/h-health7.png)");
+      setTimeout(gameOver,3000);
+    }
+  };
 
+  resetDamage = function () {
+    if (bittenbyBee){
+      console.log("resetting the bees ability to hit you");
+      bittenbyBee = false;
+    }
+    if (stungbyBee){
+      stungbyBee = false;
+    }
 
+  }; //end of resetDamage
 
+  //this is one value to change with difficulty, how often you take in damage
+  setInterval(function(){
+    resetDamage();
+  }, 1000);
 
+  npcsHurtYou = function (npcsAttack) {
+    if (dude.health > -1 && !paused){
+      dude.health = dude.health - npcsAttack;
+      console.log(npcsAttack);
+      console.log(dude.health);
 
+    }
+  };
+
+  npcGenerator = function () {
+    if (dude.sprite.position.x > 600 && !firstWaveComplete){
+      createBees(5);
+      firstWaveComplete = true;
+    }
+    if (dude.sprite.position.x > 1600 && !secondWaveComplete){
+      createBees(10);
+      secondWaveComplete = true;
+    }
+    if (dude.sprite.position.x > 2600 && !thirdWaveComplete){
+      createBees(5);
+      thirdWaveComplete = true;
+    }
+    if (dude.sprite.position.x > 3600 && !fourthWaveComplete){
+      createBees(10);
+      fourthWaveComplete = true;
+    }
+    if (dude.sprite.position.x > 4600 && !fifthWaveComplete){
+      createBees(5);
+      fifthWaveComplete = true;
+    }
+    if (dude.sprite.position.x > 5600 && !sixthWaveComplete){
+      createBees(10);
+      sixthWaveComplete = true;
+    }
+  };
+
+  npcsChaseYou = function (npcGroup) {
+    if (npcGroup.length > 0){
+      for (i=0; i < npcGroup.length; i++) {
+        npcGroup[i].attractionPoint(random(0.5, 1.2), dude.sprite.position.x, dude.sprite.position.y);
+        npcGroup[i].collide(dude.sprite);
+        //since the force keeps incrementing the speed you can
+        //set a limit to it with maxSpeed
+        npcGroup[i].maxSpeed = random(10, 20);
+      }
+    }
+  };
+
+gameOver =  function() {
+    if (dude.health < 0 && !paused && startGame){
+      console.log("Game Over Dude");
+      startGame = false;
+      $(".newGame").hide();
+      $(".overlay").show();
+      $(".overlay").animate({opacity: '0.95'}, 1000);
+      $(".playAgain").show();
+    }
+  };
 
 }); // end of the document.ready function
 
-//Newgame Constructor Method
-
-function CAMB () {
-  this.score = 0;
-  this.lives = 0;
-  this.player = "";
-  this.wins = false;
-  this.dies = false;
+//playAgain Constructor Method
 
 
-} //closes Constructor function
 
 
 // arrow key game control test
