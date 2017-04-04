@@ -110,6 +110,16 @@ markerMissle = function () {
   // obstacles.add(ground);
 
 
+    // ground = createSprite(-110, 715);
+    // ground.addImage(platformImg);
+    // ground.immovable = true;
+    //
+    // ground.visible = false;
+    // ground.debug = true;
+    // obstacles.add(ground);
+
+   // && !beeFlipped
+
 
 for (i=0; i<10; i++) {
   dot = createSprite(random(1320, 6000), random(0,height));
@@ -140,6 +150,29 @@ for (i=0; i<10; i++) {
 
 
 } //end of the setup function
+
+//I think I am going to make the menu in CSS instead of making it on canvas
+//     menu = createSprite(camera.position.x + 280, 30, 1300, 60);
+//     menu.visible = false;
+//     menuSmall = createSprite(camera.position.x + 280, 30, 1300, 60);
+//     menuSmall.visible = false;
+//
+// menuDrawer = function() {
+//   if (keyWentDown("p") && paused) {
+//     menu.visible = true;
+//     menuSmall.visible = false;
+//     fill(200);
+//     text("Game-Uno", 300, 50);
+//     text("by Sherwino", 300, 75);
+//     text(keyCode, 300, 100);
+//   } else if (!paused) {
+//     menuSmall.visible = true;
+//     menuSmall.position.x = camera.position.x;
+//     menu.visible = false;
+//     fill(255);
+//     text("Health Bar", camera.position.x, camera.position.y);
+//   }
+// };
 
 // function gravityController (dude) {
 //   gravity += 2;
