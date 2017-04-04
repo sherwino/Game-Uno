@@ -6,8 +6,9 @@ console.log("hero.js is LOADED");
 
   //ALl of the global variables I need for now until I refactor the code
   var dude, beeSquad, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
-  var theme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy, startGame = false;
-  var showHealthbar, healthShowing;
+  var theme, bossTheme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy, startGame = false;
+  var showHealthbar, healthShowing,stungbyBee = false, bittenbyBee = false;
+  var firstWaveComplete, secondWaveComplete, thirdWaveComplete, fourthWaveComplete, fifthWaveComplete, sixthWaveComplete, boatImg, boat;
 
 
 //Creates Protagonist Characters
@@ -19,7 +20,7 @@ function Hero (name, charID, playerNum) {
   this.player = playerNum;
   this.x = -240;
   this.y = 340;
-  this.health = 5;
+  this.health = 25;
   this.jump = -20;
   this.speed = 7;
   this.sprite = createSprite(this.x, this.y, 30, 60);
@@ -31,7 +32,9 @@ function preload() {
       bgImg = loadImage("./img/bg1.jpg");
       thingImg = loadImage("./img/ss.png");
       markerImg = loadImage("./img/marker.png");
+      boatImg = loadImage("./img/Fanboat.png");
       running = loadSound('./aud/running.mp3');
+      bossTheme = loadSound('./aud/boss.mp3');
 }
 
 function setup () {
@@ -39,6 +42,7 @@ function setup () {
   dude = new Hero ("Bob");
   theme = loadSound('./aud/reaching.mp3', loaded);
   running.setVolume(0.3);
+  bossTheme.setVolume(0.6);
 
 
   dude.sprite.addAnimation("standing", "./img/hero/heroguy9.png", "./img/hero/heroguy9.png");
@@ -67,10 +71,15 @@ function setup () {
       dropatTitle = true;
     },4500);
 
+  boat = createSprite(7460, 748, 92, 45);
+  boat.addImage(boatImg);
+  boat.addAnimation("destroyed", "./img/xplo-1.png", "./img/xplo-9.png");
+  boat.collide(dude.sprite);
+  boat.setCollider("rectangle", 20, 0, 97, 28);
 
-
-    for (var i=0; i<5; i++) {
-    bee = createSprite(random(800, 5000), random(100, height - 20));
+createBees = function (num) {
+    for (var i=0; i<num; i++) {
+    bee = createSprite(random(800, 2000), random(20, 300));
     bee.addAnimation("flying", "./img/bee1.png", "./img/bee6.png");
     bee.addAnimation("destroyed", "./img/xplo-1.png", "./img/xplo-9.png");
 
@@ -79,14 +88,13 @@ function setup () {
     bee.rotateToDirection = true;
     bee.flipped = false;
     bee.destroyed = false;
-    bee.attack = 1;
+    bee.attack = 0.5;
     // bee.velocity.x -= random(5, 10);
     beeSquad.add(bee);
     beeCreated = true;
-    console.log("A bee has been created");
       } //close for loop
     // }, 20000); //close setinterval
-
+}; //close the create bees function
 
 
 markerMissle = function () {
@@ -143,7 +151,6 @@ function explodeEnemy (enemy) {
   enemy.changeAnimation("destroyed");
   setTimeout(function(){
     enemy.remove();
-    projectiles.remove();
 },500);
 }
 
@@ -161,8 +168,10 @@ function draw () {
 
       dude.sprite.velocity.y += gravity;
       movementLimits();
+      npcGenerator();
       projectilesDestroyThings(beeSquad);
       npcsChaseYou(beeSquad);
+      healthMonitor();
       drawSprites();
     }
 } //end of the draw function
@@ -251,6 +260,7 @@ movementLimits = function () {
     if (keyWentDown("p") && !paused){
       updateSprites(false);
       theme.stop();
+      bossTheme.stop();
       console.log("GAME PAUSED");
       paused = true;
 
@@ -279,6 +289,12 @@ movementLimits = function () {
     if (dude.sprite.position.y > height - 32) {
       dude.sprite.position.y = height - 32;
       dude.sprite.velocity.y = 0;
+    } else if (dude.sprite.position.x > 7458 && dude.sprite.position.y > height - 32){
+      dude.sprite.velocity.y = 0.5;
+    }
+    if (boat.position.y > 748) {
+      boat.position.y = 748;
+      boat.velocity.y = 0;
     }
 
     if (dude.sprite.position.y < 40) {
@@ -290,6 +306,11 @@ movementLimits = function () {
       dude.sprite.velocity.y = 0;
     }
 
+    if(dude.sprite.overlap(boat)) {
+      dude.sprite.collide(boat);
+      boat.velocity.x = 1.5;
+      dude.sprite.position.x = boat.position.x;
+    }
     //temporary function this is going to fine tuned later to work only when the bee has been rotated upside down.
     //Just need to find out from what angle to what angle will the function run and that will help set those values.
     if (beeCreated) { //only run this if the bee has been created, and if the bee hasn't already been flipped.
@@ -303,8 +324,20 @@ movementLimits = function () {
             beeSquad[i].mirrorY(1);
             beeSquad[i].flipped = false;
       } //end of if position statement
+
+      //adding a damage statement to resuse the same for loop, need to re-factor this as well
+      if (beeSquad[i].overlap(dude.sprite)){
+        if (beeSquad[i].touching && !bittenbyBee){
+          bittenbyBee = true;
+          npcsHurtYou(beeSquad[i].attack);
+        } else if (beeSquad[i].touching.top && !stungbyBee){
+          stungbyBee = true;
+          npcsHurtYou(beeSquad[i].attack * 2);
+        }
+      }
     } //end of for loop
-  } // end of if bee created conditional
+} // end of if bee created conditional
+
 
     //Controls the volume of the theme song as you move away from the title screen.
     //Later need to make this same if statment change the song to a boss song.
@@ -314,10 +347,10 @@ movementLimits = function () {
         theme.setVolume(0.2, 0, 2);
       } else if (dude.sprite.position.x > 1000) {
           theme.setVolume(0.3, 0, 4);
+        } else if (dude.sprite.position.x > 7248) {
+          theme.stop();
+          bossTheme.play();
         }
-
-
-
 
     dude.sprite.overlap(items, collect);
     // if (dude.sprite.collide(beeSquad)){
@@ -331,7 +364,9 @@ movementLimits = function () {
 };
 
 projectilesDestroyThings = function(group) {
-  dude.sprite.collide(projectiles);
+  //will have to add this collision later because I want to make it a little bit smarter
+  //the projectile has collisions when attached to a surface but not when it leaves the dude
+  // dude.sprite.collide(projectiles);
   projectiles.collide(group);
 
   for (i=0; i < group.length; i++) {
@@ -346,17 +381,11 @@ projectilesDestroyThings = function(group) {
 
 }; //end of the projectilesDestroyThings function
 
-npcsChaseYou = function (npcGroup) {
-  if (npcGroup.length > 0){
-    for (i=0; i < npcGroup.length; i++) {
-      npcGroup[i].attractionPoint(random(0.5, 1.2), dude.sprite.position.x, dude.sprite.position.y);
-      npcGroup[i].collide(dude.sprite);
-      //since the force keeps incrementing the speed you can
-      //set a limit to it with maxSpeed
-      npcGroup[i].maxSpeed = random(10, 20);
-    }
-  }
-};
+
+//every 3seconds npcs could damage you again
+//this resets their ability to do that, because if I count every collision and overlap
+//the game will be over fairly quick
+
 
 function keyReleased() {
   if (lastPressed === "right"){

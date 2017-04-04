@@ -17,7 +17,7 @@
 
 <body>
   <div class = "overlay">
-    <span class = "controlsText">
+    <span class = "controlsText newGame">
           <h2>Controls</h2>
           <div>
             <p>Left / Right = Run</p>
@@ -30,21 +30,22 @@
           </div>
 
     </span>
-    <span class="titleImg">Last Action Hero</span>
-    <div class = "charSelect">
+    <span class="titleImg newGame">Last Action Hero</span>
+    <span class="titleImg playAgain">Game Over</span>
+    <div class = "charSelect newGame">
       <span id="select">Select Hero</span>
       <span id="charID1"></span><span id="charID2"></span><span id="charID3"></span>
     </div>
     <span class="buttonSpacer"></span>
-    <button>START GAME</button>
-
+    <button class="newGame">START GAME</button>
+    <button class="playAgain">PLAY AGAIN?</button>
   </div>
   <div class ="healthOverlay">
-    <div id="p1">----P1---</div>
+    <div id="p1"></div>
     <div id="p1Score">----P1Score---</div>
     <div id="gameTimer">----Timer---</div>
     <div id="p2Score">----P2Score---</div>
-    <div id="p2">----P2---</div>
+    <div id="p2"></div>
   </div>
   <!-- <div class = "scoreBoard">
     <p><span id="seconds">00</span>:<span id="tens">00</span></p>
