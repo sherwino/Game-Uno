@@ -149,6 +149,24 @@ gameOver =  function() {
     }
   };
 
+  //Controls the volume of the theme song as you move away from the title screen.
+  //Later need to make this same if statment change the song to a boss song.
+  gameMusic = function () {
+
+    if (dude.sprite.position.x < 700) {
+        theme.setVolume(0.1, 0, 1);
+    } else if (dude.sprite.position.x > 700) {
+        theme.setVolume(0.2, 0, 2);
+      } else if (dude.sprite.position.x > 1000) {
+          theme.setVolume(0.3, 0, 4);
+        }
+        if (dude.sprite.position.x > 7480) {
+          console.log("dude is near boss");
+          theme.stop();
+          bossTheme.play();
+        }
+  }; //end of game music function
+
 }); // end of the document.ready function
 
 //playAgain Constructor Method

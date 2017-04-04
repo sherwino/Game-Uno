@@ -7,7 +7,7 @@ console.log("hero.js is LOADED");
   //ALl of the global variables I need for now until I refactor the code
   var dude, beeSquad, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
   var theme, bossTheme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy, startGame = false;
-  var showHealthbar, healthShowing,stungbyBee = false, bittenbyBee = false, finalWaveComplete, bittenbyDragon;
+  var showHealthbar, healthShowing,stungbyBee = false, bittenbyBee = false, finalWaveComplete, bittenbyDragon, boom;
   var firstWaveComplete, secondWaveComplete, thirdWaveComplete, fourthWaveComplete, fifthWaveComplete, sixthWaveComplete, boatImg, boat, bossWaveComplete, bossDragon, dragon, bossImg, dragonCreated;
 
 
@@ -34,17 +34,18 @@ function preload() {
       markerImg = loadImage("./img/marker.png");
       boatImg = loadImage("./img/Fanboat.png");
       running = loadSound('./aud/running.mp3');
-      bossTheme = loadSound('./aud/boss.mp3');
       bossImg = loadImage("./img/boss/drag.png");
+      boom = loadSound("./aud/boom.mp3");
 }
 
 function setup () {
   createCanvas(1300,768);
   dude = new Hero ("Bob");
   theme = loadSound('./aud/reaching.mp3', loaded);
+  bossTheme = loadSound('./aud/boss.mp3');
   running.setVolume(0.3);
   bossTheme.setVolume(0.6);
-
+  boom.setVolume(0.6);
 
   dude.sprite.addAnimation("standing", "./img/hero/heroguy9.png", "./img/hero/heroguy9.png");
   dude.sprite.addAnimation("jumping", "./img/hero/heroguy_jump1.png");
@@ -161,6 +162,7 @@ theme.setVolume(0.01, 0, 5);
 
 function explodeEnemy (enemy) {
   enemy.changeAnimation("destroyed");
+  boom.play();
   setTimeout(function(){
     enemy.remove();
 },500);
@@ -333,7 +335,7 @@ movementLimits = function () {
       dude.sprite.position.x = boat.position.x;
     }
 
-    if(boat.position.x > 11436) {
+    if(boat.position.x > 11036) {
       boat.velocity.x = 0;
     }
     //temporary function this is going to fine tuned later to work only when the bee has been rotated upside down.
@@ -370,18 +372,6 @@ if (dragonCreated) {
   }
 }
 
-    //Controls the volume of the theme song as you move away from the title screen.
-    //Later need to make this same if statment change the song to a boss song.
-    if (dude.sprite.position.x < 700) {
-        theme.setVolume(0.1, 0, 1);
-    } else if (dude.sprite.position.x > 700) {
-        theme.setVolume(0.2, 0, 2);
-      } else if (dude.sprite.position.x > 1000) {
-          theme.setVolume(0.3, 0, 4);
-        } else if (dude.sprite.position.x > 7480) {
-          theme.stop();
-          bossTheme.play();
-        }
 
     dude.sprite.overlap(items, collect);
     // if (dude.sprite.collide(beeSquad)){
@@ -389,7 +379,7 @@ if (dragonCreated) {
     // }
     function collect(collector, collected){
       dude.sprite.scale += 0.15;
-      dude.health += 5;
+      dude.health += 1;
       collected.remove();
     }
 
