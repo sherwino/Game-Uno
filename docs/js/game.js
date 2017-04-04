@@ -12,7 +12,7 @@ $(document).ready(function() {
 
   //reset game via rotateToDirection
   $("button.playAgain").click(function(){
-    window.location.href="./index.html";
+    window.location.href="./game.html";
   });
 
   showHealthbar = function (val) {
@@ -52,6 +52,12 @@ $(document).ready(function() {
     if (stungbyBee){
       stungbyBee = false;
     }
+
+    if(dragonCreated) {
+      if(bittenbyDragon) {
+        bittenbyDragon = false;
+    }
+  }
 
   }; //end of resetDamage
 
@@ -94,8 +100,19 @@ $(document).ready(function() {
       createBees(10);
       sixthWaveComplete = true;
     }
+    if (dude.sprite.position.x > 8500 && !bossWaveComplete) {
+      bossDragon();
+      console.log("the dragons have been released");
+      createBees(10);
+      bossWaveComplete = true;
+    }
+    if (dude.sprite.position.x > 11500 && !finalWaveComplete) {
+      createBees(10);
+      finalWaveComplete = true;
+    }
   };
 
+//for flying enemies
   npcsChaseYou = function (npcGroup) {
     if (npcGroup.length > 0){
       for (i=0; i < npcGroup.length; i++) {
@@ -103,8 +120,20 @@ $(document).ready(function() {
         npcGroup[i].collide(dude.sprite);
         //since the force keeps incrementing the speed you can
         //set a limit to it with maxSpeed
-        npcGroup[i].maxSpeed = random(10, 20);
+        npcGroup[i].maxSpeed = random(20, 50);
       }
+    }
+  };
+
+//for boss
+  bossChaseYou = function (boss) {
+    if (dragonCreated) {
+      boss.attractionPoint(0.2, 11700, dude.sprite.position.y);
+      boss.collide(dude.sprite);
+      // boss.rotateToDirection = true;
+        //since the force keeps incrementing the speed you can
+        //set a limit to it with maxSpeed
+      boss.maxSpeed = 5;
     }
   };
 
@@ -116,6 +145,7 @@ gameOver =  function() {
       $(".overlay").show();
       $(".overlay").animate({opacity: '0.95'}, 1000);
       $(".playAgain").show();
+      paused = true;
     }
   };
 
