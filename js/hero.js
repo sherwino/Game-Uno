@@ -180,7 +180,7 @@ function draw () {
     if(startGame){
       clear();
       image(bgImg, -400,0);
-
+      gameMusic();
       dude.sprite.velocity.y += gravity;
       movementLimits();
       npcGenerator();
