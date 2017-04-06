@@ -12,7 +12,19 @@ $(document).ready(function() {
 
   //reset game via rotateToDirection
   $("button.playAgain").click(function(){
-    window.location.href="./game.html";
+    window.location.href="./index.html";
+  });
+
+//this lets the selecter character to stay lit and adds a class that can be used later
+//should create a test later that only lets one character get selected
+  $("#charID1, #charID2, #charID3").on("click", function () {
+    if ($(this).hasClass("clicked")) {
+        $(this).stop().animate({opacity: '0.4'});
+        $(this).toggleClass("clicked");
+    } else {
+    $(this).stop().animate({opacity: '0.99'}, 100);
+    $(this).toggleClass("clicked");
+    }
   });
 
   showHealthbar = function (val) {

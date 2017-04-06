@@ -36,6 +36,7 @@ function preload() {
       running = loadSound('./aud/running.mp3');
       bossImg = loadImage("./img/boss/drag.png");
       boom = loadSound("./aud/boom.mp3");
+
 }
 
 function setup () {
