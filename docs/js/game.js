@@ -172,10 +172,11 @@ gameOver =  function() {
       } else if (dude.sprite.position.x > 1000) {
           theme.setVolume(0.3, 0, 4);
         }
-        if (dude.sprite.position.x > 7480) {
+        if (dude.sprite.position.x > 10480 && !bossthemePlaying) {
           console.log("dude is near boss");
           theme.stop();
           bossTheme.play();
+          bossthemePlaying = true;
         }
   }; //end of game music function
 

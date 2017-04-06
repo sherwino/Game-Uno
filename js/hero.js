@@ -7,7 +7,7 @@ console.log("hero.js is LOADED");
   //ALl of the global variables I need for now until I refactor the code
   var dude, beeSquad, lastPressed, bee, collect, jumping = false, markerMissle, ground, dot, items, marker, thingImg, platformImg, markerImg, gravityController, projectiles, gravity = 1, bgImg, movementLimits, mapWidth = 12085;
   var theme, bossTheme, npcAttack, runSound, punchcount = 0, paused = false, dropatTitle, beeCreated, beeFlipped = 0, beeSquad, explodeEnemy, startGame = false;
-  var showHealthbar, healthShowing,stungbyBee = false, bittenbyBee = false, finalWaveComplete, bittenbyDragon, boom;
+  var showHealthbar, healthShowing,stungbyBee = false, bittenbyBee = false, finalWaveComplete, bittenbyDragon, boom, bossthemePlaying;
   var firstWaveComplete, secondWaveComplete, thirdWaveComplete, fourthWaveComplete, fifthWaveComplete, sixthWaveComplete, boatImg, boat, bossWaveComplete, bossDragon, dragon, bossImg, dragonCreated;
 
 
